@@ -86,7 +86,7 @@ async function syncFuelLogs() {
 
         for (const log of data) {
             await prisma.fuel_log.upsert({
-                where: { id_: log.id_ },
+                where: { id_: log.id },
                 update: {
                     log_date: log.log_date ? new Date(log.log_date) : null,
                     odometer_reading: log.odometer_reading,
@@ -100,14 +100,12 @@ async function syncFuelLogs() {
                     cost_per_km: log.cost_per_km,
                     variance_percentage: log.variance_percentage,
                     needs_attention: log.needs_attention,
-                    driver_id_: log.driver_id_ ?? null,
-                    vehicle_id_: log.vehicle_id_ ?? null,
-                    deleted_at: log.deleted_at
-                        ? new Date(log.deleted_at)
-                        : null,
+                    driver_id_: log.driver_id || null,
+                    vehicle_id_: log.vehicle_id || null,
+                    deleted_at: null,
                 },
                 create: {
-                    id_: log.id_,
+                    id_: log.id,
                     log_date: log.log_date ? new Date(log.log_date) : null,
                     odometer_reading: log.odometer_reading,
                     liters_added: log.liters_added,
@@ -120,12 +118,10 @@ async function syncFuelLogs() {
                     cost_per_km: log.cost_per_km,
                     variance_percentage: log.variance_percentage,
                     needs_attention: log.needs_attention,
-                    driver_id_: log.driver_id_ ?? null,
-                    vehicle_id_: log.vehicle_id_ ?? null,
+                    driver_id_: log.driver_id || null,
+                    vehicle_id_: log.vehicle_id || null,
                     created_at: new Date(log.created_at),
-                    deleted_at: log.deleted_at
-                        ? new Date(log.deleted_at)
-                        : null,
+                    deleted_at: null,
                 },
             });
         }
