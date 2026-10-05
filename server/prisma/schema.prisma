@@ -1,0 +1,273 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model manager {
+  id_           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  lastname      String
+  firstname     String
+  middleInitial String?
+  email         String   @unique
+  createdAt     DateTime @default(now())
+}
+
+model route {
+  id_                  String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name                 String   @unique @default(uuid())
+  totalDistanceKm      Float
+  totalDurationMinutes Int
+  createdAt            DateTime @default(now())
+  archivedAt           DateTime?  
+  vehicleType          String?
+
+  stops                stop[]
+  trips                trip[]
+}
+
+model stop {
+  id_       String  @id @default(uuid())
+  route_id_ String  @db.Uuid
+
+  name      String
+  address   String?
+  order     Int
+  lat       Float
+  lng       Float
+  route     route   @relation(fields: [route_id_], references: [id_], onDelete: Cascade)
+
+  @@index([route_id_])
+}
+
+model agent_profile {
+  // Internal PK
+  id_            String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid 
+  // External, from CORE user ID
+  // agent_id_   String  @unique @db.Uuid 
+
+  //employee_number
+  driver_id      String  @unique @db.VarChar(100)
+  contact_number String? @db.VarChar(100)
+  license_number String? @db.VarChar(100)
+  //avatar_url   String? @db.Text
+  //tenant_id_   String  @db.Uuid
+
+  created_at     DateTime @default(now()) @db.Timestamptz(6)
+
+  // Relations
+  vehicles            vehicle[]
+  fuel_log            fuel_log[]
+  trips               trip[]
+
+  //@@index([agent_id_, tenant_id_])
+
+  @@map("agent_profile")
+}
+
+model vehicle_make {
+  id_        String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name       String    @unique @db.Text
+  created_at DateTime  @default(now()) @db.Timestamptz(6)
+  
+  vehicles   vehicle[]
+  
+  @@map("vehicle_make")
+}
+
+model vehicle_model {
+  id_        String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name       String    @unique @db.Text
+  created_at DateTime  @default(now()) @db.Timestamptz(6)
+  
+  vehicles   vehicle[]
+  
+  @@map("vehicle_model")
+}
+
+enum VehicleType {
+  VAN
+  MOTORCYCLE
+  CAR
+  TRUCK
+  BUS
+  OTHER
+}
+
+model vehicle {
+  id_                String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  created_at         DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at         DateTime  @updatedAt @db.Timestamptz(6)
+  archived_at        DateTime?  @db.Timestamptz(6)
+  deleted_at         DateTime? @db.Timestamptz(6)
+  plate_number       String    @db.Text
+  year               Int
+  vehicle_type       VehicleType?
+  weight_capacity    Int?      // in kg
+  initial_odometer   Int
+  last_odometer      Float?
+  expected_kml       Int      //  km/L
+  conduction_sticker String?   @db.Text
+  is_active          Boolean   @default(true)
+
+  reg_certification   String?   @db.Text
+  or_number           String?   @db.Text
+  registration_expiry DateTime? @db.Timestamptz(6)
+  insurance_expiry    DateTime? @db.Timestamptz(6)
+
+  // Foreign Keys
+  driver_id_ String? @db.Uuid // FK to agent_profile
+  make_id_   String?  @db.Uuid
+  model_id_  String?  @db.Uuid
+  //tenant_id_     String  @db.Uuid
+
+  // Relations
+  agent_profile agent_profile? @relation(fields: [driver_id_], references: [id_], onDelete: Cascade)
+  vehicle_make  vehicle_make?   @relation(fields: [make_id_], references: [id_], onDelete: Cascade)
+  vehicle_model vehicle_model?  @relation(fields: [model_id_], references: [id_], onDelete: Cascade)
+  fuel_log      fuel_log[]
+  trip          trip[]
+
+  // Indexes
+  @@index([created_at, updated_at, driver_id_, make_id_, model_id_])
+  @@map("vehicle")
+}
+
+model trip {
+  id_            String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  status         TripStatus     @default(PENDING)
+  tag_type       TagTypes       @default(OPEN)
+  // destination    String     @db.Text
+  scheduled_date DateTime?      @db.Timestamptz(6)
+  notes          String?
+  image_url      String?
+  proof_url      String?
+  accepted_at    DateTime?      @db.Timestamptz(6)
+  departed_at    DateTime?      @db.Timestamptz(6)
+  completed_at   DateTime?      @db.Timestamptz(6)
+
+  created_at     DateTime       @default(now()) @db.Timestamptz(6)
+  updated_at     DateTime       @updatedAt @db.Timestamptz(6)
+  deleted_at     DateTime?      @db.Timestamptz(6)
+
+  // Foreign Keys
+  driver_id_     String?        @db.Uuid // FK to agent_profile
+  route_id_      String?         @db.Uuid
+
+  vehicle_id_            String? @db.Uuid
+  //assigned_by      String? @db.Uuid // FK to current user
+  //task_purpose_id_ String? @db.Uuid
+  //tenant_id_       String  @db.Uuid
+
+  // Relations
+  agent_profile           agent_profile? @relation(fields: [driver_id_], references: [id_])
+  route                   route?           @relation(fields: [route_id_], references: [id_])
+  orders                  order[]
+  vehicle                 vehicle?       @relation(fields: [vehicle_id_], references: [id_])
+
+  //trip_tasks trip_task[]
+  //checkins   checkin[]
+
+  // Indexes
+  //@@unique([id_ , tenant_id_])
+  // @@unique([id_])
+  // @@index([created_at, updated_at, tenant_id_])
+  // @@index([vehicle_id_, driver_id_, status, tag_type, tenant_id_])
+  // @@map("trip")
+  // @@schema("trips")
+
+  @@index([driver_id_])
+  @@index([route_id_])
+  @@index([status])
+  @@map("trip")
+}
+
+model order {
+  id_             String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  order_id        String      @unique
+  client          String
+  destination     String?
+  ordered_on      DateTime    @db.Timestamptz(6)
+  delivered_by    DateTime?   @db.Timestamptz(6)
+  package_content String?
+  package_size    String?
+  package_weight  Float?
+  status          OrderStatus @default(PENDING)
+
+  trip_id_        String?     @db.Uuid
+  created_at      DateTime    @default(now()) @db.Timestamptz(6)
+  updated_at      DateTime    @updatedAt @db.Timestamptz(6)
+  
+  trip            trip?       @relation(fields: [trip_id_], references: [id_])
+
+  @@index([trip_id_])
+}
+
+model fuel_log {
+  id_                 String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  log_date            DateTime?      @db.Timestamptz(6)
+  odometer_reading    Float
+  liters_added        Float
+  price_per_liter     Float
+  total_price         Float
+  receipt_url         String?        @db.Text
+  notes               String?        @db.Text
+
+  distance_traveled   Float
+  fuel_efficiency     Float
+  cost_per_km         Float
+  variance_percentage Float
+  needs_attention     Boolean
+
+  created_at          DateTime       @default(now()) @db.Timestamptz(6)
+  updated_at          DateTime       @updatedAt @db.Timestamptz(6)
+  deleted_at          DateTime?      @db.Timestamptz(6)
+  
+  // Foreign Keys
+  driver_id_          String?     @db.Uuid // FK to agent_profile
+  vehicle_id_         String?     @db.Uuid
+  //tenant_id_  String  @db.Uuid
+
+  // Relations
+  agent_profile       agent_profile? @relation(fields: [driver_id_], references: [id_])
+  vehicle             vehicle?       @relation(fields: [vehicle_id_], references: [id_])
+
+  // Indexes
+  //@@index([created_at, updated_at, vehicle_id_, tenant_id_])
+  @@index([created_at, updated_at])
+  @@map("fuel_log")
+}
+
+enum TripStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+  CANCELLED
+}
+
+enum OrderStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+  CANCELLED
+}
+
+enum TagTypes {
+  OPEN
+  ASSIGNED
+
+  //@@schema("trips")
+}

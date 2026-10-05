@@ -1,0 +1,157 @@
+@import "tailwindcss";
+
+/* Class-based dark mode: `dark:` utilities apply when <html> has the `.dark` class. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+    --background: #f6f9fc;
+    --foreground: #171717;
+    --primary: #d4e9fe; /* Selected */
+    --primary-foreground: #0056a4;
+    --secondary: #c1dff8; /* Hover */
+    --muted-foreground: #6b7280;
+    --border: #d9dfe5;
+    --card: #ffffff;
+    --card-border: #e5e7eb;
+    --btn: #ffffff;
+    --btn-border: #d9dfe5;
+    --btn-danger: #e7000b;
+    --btn-danger-hover: #c10007;
+}
+
+.dark {
+    --background: #04070f;
+    --foreground: #eaeff5;
+    --primary: #0d263b;
+    --primary-foreground: #008efb;
+    --secondary: #c1dff8;
+    --muted-foreground: #9ca3af;
+    --border: #292f3b;
+    --card: #0d1b2e;
+    --card-border: #1e3a5f;
+    --btn: #0c2a45;
+    --btn-border: #1e466e;
+    --btn-danger: #e7000b;
+    --btn-danger-hover: #c10007;
+}
+
+/* Kills every transition, while theme switching, so it'll paint 
+   the whole page instantly */
+html.theme-switching,
+html.theme-switching * {
+    transition: none !important;
+}
+
+@theme {
+    --color-background: var(--background);
+    --color-foreground: var(--foreground);
+    --color-primary: var(--primary);
+    --color-primary-foreground: var(--primary-foreground);
+    --color-secondary: var(--secondary);
+    --color-muted: var(--muted);
+    --color-muted-foreground: var(--muted-foreground);
+    --color-border: var(--border);
+    --color-card: var(--card);
+    --color-card-border: var(--card-border);
+    --color-btn: var(--btn);
+    --color-btn-border: var(--btn-border);
+    --color-btn-danger: var(--btn-danger);
+    --color-btn-danger-hover: var(--btn-danger-hover);
+    --color-x: var(--x);
+
+    --font-sans: var(--font-geist-sans);
+    --font-mono: var(--font-geist-mono);
+    /* Slow pulsing outline used by loading skeletons while a page loads */
+    --animate-skeleton: skeleton-pulse 2.4s ease-in-out infinite;
+}
+
+/* Gentle opacity flash that makes skeleton outlines slowly fade in and out */
+@keyframes skeleton-pulse {
+    0%,
+    100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.35;
+    }
+}
+
+body {
+    background: var(--background);
+    color: var(--foreground);
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.dark .leaflet-tile-pane {
+    filter: brightness(1.12) contrast(0.88) saturate(0) sepia(1)
+        hue-rotate(178deg) saturate(2.2) brightness(0.9) contrast(1.05);
+}
+
+.dark .leaflet-container {
+    background: #0c1a2b;
+}
+
+/* Marker popups → midnight-blue card to match the route panel. */
+.dark .leaflet-popup-content-wrapper,
+.dark .leaflet-popup-tip {
+    background: #0d1b2e;
+    color: #e5edf5;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.5);
+}
+.dark .leaflet-popup-content small {
+    color: #94a3b8 !important;
+}
+.dark .leaflet-popup-close-button {
+    color: #94a3b8 !important;
+}
+
+/* Zoom control → navy buttons with light glyphs. */
+.dark .leaflet-bar a,
+.dark .leaflet-bar a:hover {
+    background: #0d1b2e;
+    color: #e5edf5;
+    border-bottom-color: #1e3a5f;
+}
+.dark .leaflet-bar a:hover {
+    background: #103a5f;
+}
+
+/* Dark-mode scrollbars for the .route-scrollbar lists. */
+.dark .route-scrollbar {
+    scrollbar-width: thin; /* Firefox */
+    scrollbar-color: #cbd5e1 #0b1f35;
+}
+.dark .route-scrollbar::-webkit-scrollbar {
+    width: 12px;
+}
+.dark .route-scrollbar::-webkit-scrollbar-track {
+    background: #0b1f35;
+    border-radius: 999px;
+}
+.dark .route-scrollbar::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 999px;
+    /* transparent border over a padding-box clip insets the thumb, leaving the
+       track visible on either side for the pill look. */
+    border: 3px solid transparent;
+    background-clip: padding-box;
+}
+.dark .route-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #f1f5f9;
+    background-clip: padding-box;
+}
+/* Up/down arrow buttons (WebKit only; Firefox shows its native thin scrollbar). */
+.dark .route-scrollbar::-webkit-scrollbar-button:single-button {
+    background: #0b1f35;
+    height: 12px;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+.dark
+    .route-scrollbar::-webkit-scrollbar-button:single-button:vertical:decrement {
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'><path d='M2.5 6.25L5 3.75l2.5 2.5' fill='none' stroke='%23cbd5e1' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+}
+.dark
+    .route-scrollbar::-webkit-scrollbar-button:single-button:vertical:increment {
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'><path d='M2.5 3.75L5 6.25l2.5-2.5' fill='none' stroke='%23cbd5e1' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+}
