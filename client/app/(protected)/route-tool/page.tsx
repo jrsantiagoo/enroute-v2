@@ -25,7 +25,6 @@ import {
     setRouteArchived,
 } from "@/lib/routing/storageHelper";
 import { useTheme } from "@/lib/theme-context";
-import { DARK } from "@/components/routing/routeTheme";
 import CreateRouteModal from "@/components/routing/CreateRouteModal";
 import SavedRoutesTable from "@/components/routing/SavedRoutesTable";
 import ConfirmDialog from "@/components/routing/ConfirmDialog";
@@ -160,80 +159,31 @@ export default function RouteCreationPage() {
         .map((r) => r.name);
 
     // ─────────────────────────────────────────────────────────────────────────
-    // 4. DARK MODE STYLES — palette lives in components/routing/routeTheme.ts
-    // ─────────────────────────────────────────────────────────────────────────
-
-    const text = dark ? DARK.text : "#111827";
-    const muted = dark ? DARK.textMuted : "#6b7280";
-    const border = dark ? DARK.panelBorder : "#d1d5db";
-
-    // ─────────────────────────────────────────────────────────────────────────
-    // 5. PAGE LAYOUT
+    // 4. PAGE LAYOUT
     // ─────────────────────────────────────────────────────────────────────────
 
     return (
-        <div style={{ width: "100%" }}>
+        <div className="flex flex-col gap-6 w-full">
             {/* Page header */}
-            <div style={{ marginBottom: "20px" }}>
-                <h1
-                    style={{
-                        margin: 0,
-                        fontSize: "26px",
-                        fontWeight: 700,
-                        color: text,
-                    }}
-                >
-                    Route Creation
-                </h1>
-                <p
-                    style={{
-                        margin: "6px 0 0",
-                        fontSize: "14px",
-                        color: muted,
-                    }}
-                >
-                    Create and manage delivery routes across your fleet.
-                </p>
+            <div className="flex items-center">
+                <div className="flex flex-col">
+                    <h1 className="text-2xl font-bold text-foreground">
+                        Route Creation
+                    </h1>
+                    <p className="text-base text-muted-foreground">
+                        Create and manage delivery routes across your fleet.
+                    </p>
+                </div>
             </div>
 
             {/* Actions row */}
-            <div
-                style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    marginBottom: "20px",
-                    gap: "12px",
-                }}
-            >
+            <div className="flex justify-between items-center">
                 <button
                     onClick={openCreate}
-                    style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "8px",
-                        padding: "6px 18px",
-                        background: dark ? DARK.btnBg : "#fff",
-                        color: DARK.btnText,
-                        border: `1px solid ${dark ? DARK.btnBorder : "#d9dfe5"}`,
-                        borderRadius: "8px",
-                        fontSize: "14px",
-                        fontWeight: 600,
-                        transition: "background 0.15s",
-                        cursor: "pointer",
-                    }}
-                    onMouseEnter={(e) => (
-                        (e.currentTarget.style.background = "#c1dff8"),
-                        (e.currentTarget.style.color = `${dark ? "var(--primary)" : "var(--foreground)"}`)
-                    )}
-                    onMouseLeave={(e) => (
-                        (e.currentTarget.style.background = dark
-                            ? DARK.btnBg
-                            : "#fff"),
-                        (e.currentTarget.style.color = "var(--foreground)")
-                    )}
+                    className="flex items-center gap-2 px-4 py-1.5 text-sm font-semibold rounded-lg border border-btn-border bg-btn
+                        text-foreground hover:bg-secondary dark:hover:text-primary transition duration-300 cursor-pointer"
                 >
-                    <Plus size={16} strokeWidth={2} />
+                    <Plus size={16} />
                     Create New Route
                 </button>
 
@@ -241,20 +191,10 @@ export default function RouteCreationPage() {
                     onClick={reload}
                     title="Refresh"
                     aria-label="Refresh saved routes"
-                    style={{
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        width: "40px",
-                        height: "40px",
-                        borderRadius: "50%",
-                        border: `1px solid ${border}`,
-                        background: dark ? DARK.btnBg : "#fff",
-                        color: muted,
-                        cursor: "pointer",
-                    }}
+                    className="flex items-center justify-center w-8 h-8 rounded-full border border-btn-border bg-btn 
+                        text-muted-foreground hover:bg-secondary dark:hover:text-primary transition duration-300 cursor-pointer"
                 >
-                    <RefreshCw size={17} strokeWidth={2} />
+                    <RefreshCw size={16} />
                 </button>
             </div>
 
