@@ -1,8 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useTheme } from "@/lib/theme-context";
-import { DARK } from "./routeTheme";
+import { X } from "lucide-react";
 
 interface SaveRouteModalProps {
     onClose: () => void;
@@ -25,8 +24,6 @@ export default function SaveRouteModal({
     confirmLabel = "Save Route",
     initialName = "",
 }: SaveRouteModalProps) {
-    const { theme } = useTheme();
-    const dark = theme === "dark";
     const [name, setName] = useState(initialName);
     const [touched, setTouched] = useState(false);
 
@@ -56,80 +53,33 @@ export default function SaveRouteModal({
     return (
         /* Backdrop */
         <div
-            style={{
-                position: "fixed",
-                inset: 0,
-                zIndex: 99998,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                background: "rgba(0,0,0,0.4)",
-            }}
+            className="fixed inset-0 z-99998 flex justify-center items-center bg-black/40"
             onClick={(e) => {
                 if (e.target === e.currentTarget) onClose();
             }}
         >
             {/* Dialog */}
-            <div
-                style={{
-                    background: dark ? DARK.panelBg : "#fff",
-                    borderRadius: "8px",
-                    width: "420px",
-                    maxWidth: "92vw",
-                    display: "flex",
-                    flexDirection: "column",
-                    border: dark ? `1px solid ${DARK.panelBorder}` : "none",
-                    boxShadow: "0 20px 60px rgba(0,0,0,0.45)",
-                }}
-            >
+            <div className="flex flex-col w-105 max-w-[92vw] rounded-lg bg-card border border-card-border shadow shadow-card-border">
                 {/* Header */}
-                <div
-                    style={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "flex-start",
-                        padding: "16px 20px",
-                        borderBottom: `1px solid ${dark ? DARK.panelBorder : "#e5e7eb"}`,
-                    }}
-                >
-                    <h2
-                        style={{
-                            margin: 0,
-                            fontSize: "16px",
-                            fontWeight: 700,
-                            color: dark ? DARK.text : "#111827",
-                        }}
-                    >
+                <div className="flex px-5 py-4 justify-between items-start border-b border-b-card-border">
+                    <h2 className="text-base font-bold text-foreground">
                         {title}
                     </h2>
                     <button
                         onClick={onClose}
-                        style={{
-                            background: "none",
-                            border: "none",
-                            fontSize: "20px",
-                            cursor: "pointer",
-                            color: dark ? DARK.textMuted : "#6b7280",
-                            lineHeight: 1,
-                            padding: "0 4px",
-                        }}
+                        className="p-1 rounded-md text-muted-foreground leading-none hover:bg-secondary
+                            hover:text-foreground dark:hover:text-primary transition cursor-pointer"
                         aria-label="Close"
                     >
-                        ×
+                        <X size={15} />
                     </button>
                 </div>
 
                 {/* Body */}
-                <div style={{ padding: "16px 20px" }}>
+                <div className="px-5 py-4">
                     <label
                         htmlFor="route-name"
-                        style={{
-                            display: "block",
-                            fontSize: "12px",
-                            fontWeight: 600,
-                            color: dark ? DARK.text : "#374151",
-                            marginBottom: "6px",
-                        }}
+                        className="block mb-1.5 text-xs font-semibold text-foreground"
                     >
                         Route name
                     </label>
@@ -146,34 +96,11 @@ export default function SaveRouteModal({
                         onKeyDown={(e) => {
                             if (e.key === "Enter") handleSave();
                         }}
-                        style={{
-                            width: "100%",
-                            padding: "8px 10px",
-                            border: `1px solid ${
-                                error
-                                    ? "#ef4444"
-                                    : dark
-                                      ? DARK.panelBorder
-                                      : "#d1d5db"
-                            }`,
-                            borderRadius: "4px",
-                            fontSize: "13px",
-                            color: dark ? DARK.text : "#111827",
-                            background: dark ? DARK.elevatedBg : "#fff",
-                            outline: "none",
-                            boxSizing: "border-box",
-                        }}
+                        className={`px-2.5 py-2 w-full rounded-sm text-[13px] text-foreground dark:bg-[#0f2237] border outline-none box-border
+                            ${error ? "border-red-500" : "border-card-border"}`}
                     />
                     {error && (
-                        <p
-                            style={{
-                                margin: "8px 0 0",
-                                fontSize: "12px",
-                                color: "#ef4444",
-                            }}
-                        >
-                            {error}
-                        </p>
+                        <p className="mt-2 text-sm text-red-500">{error}</p>
                     )}
                 </div>
 
@@ -188,39 +115,21 @@ export default function SaveRouteModal({
                 >
                     <button
                         onClick={onClose}
-                        style={{
-                            padding: "8px 16px",
-                            background: dark ? DARK.btnBg : "#fff",
-                            color: dark ? DARK.btnText : "#374151",
-                            border: `1px solid ${dark ? DARK.btnBorder : "#d1d5db"}`,
-                            borderRadius: "4px",
-                            fontSize: "13px",
-                            fontWeight: 500,
-                            cursor: "pointer",
-                        }}
+                        className="px-4 py-2 text-[13px] font-medium rounded-sm bg-btn border border-btn-border text-foreground 
+                            hover:bg-secondary dark:hover:text-primary transition duration-350 cursor-pointer"
                     >
                         Cancel
                     </button>
                     <button
                         onClick={handleSave}
                         disabled={!canSave}
-                        style={{
-                            padding: "8px 22px",
-                            background: !canSave
-                                ? dark
-                                    ? "#1e293b"
-                                    : "#9ca3af"
-                                : dark
-                                  ? DARK.btnBg
-                                  : "#374151",
-                            color: dark ? DARK.btnText : "#fff",
-                            border: dark ? `1px solid ${DARK.btnBorder}` : "none",
-                            borderRadius: "4px",
-                            fontSize: "13px",
-                            fontWeight: 500,
-                            cursor: canSave ? "pointer" : "not-allowed",
-                            opacity: canSave ? 1 : 0.7,
-                        }}
+                        className={`py-2 px-5.5 text-[13px] font-semibold rounded-sm text-background dark:text-foreground border 
+                                bg-[#1e293b] dark:bg-btn border-btn-border transition duration-250 
+                                ${
+                                    canSave
+                                        ? "hover:bg-secondary hover:text-foreground dark:hover:text-primary opacity-100 cursor-pointer"
+                                        : "opacity-70 cursor-not-allowed"
+                                }`}
                     >
                         {confirmLabel}
                     </button>

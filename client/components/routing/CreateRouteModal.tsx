@@ -12,12 +12,10 @@ import { DEFAULT_STOPS } from "@/lib/routing/mockData";
 import { fetchRoute } from "@/lib/routing/routingService";
 import { saveRoute, isRouteNameTaken } from "@/lib/routing/storageHelper";
 import { recommendVehicle } from "@/lib/routing/vehicleLogic";
-import { useTheme } from "@/lib/theme-context";
 import RouteMap from "./RouteMap";
 import RouteOrderingPanel from "./RouteOrderingPanel";
 import SuggestRoutesModal from "./SuggestRoutesModal";
 import SaveRouteModal from "./SaveRouteModal";
-import { DARK } from "./routeTheme";
 import { createRoute, updateRoute } from "@/lib/api/routes";
 
 function generateRouteId(): string {
@@ -38,8 +36,6 @@ export default function CreateRouteModal({
     onClose,
     onSaved,
 }: CreateRouteModalProps) {
-    const { theme } = useTheme();
-    const dark = theme === "dark";
     const isEditing = !!editingRoute;
 
     const [stops, setStops] = useState<Stop[]>(
@@ -170,11 +166,11 @@ export default function CreateRouteModal({
                     </div>
                     <button
                         onClick={onClose}
-                        className="flex items-center px-1 justify-center text-muted-foreground hover:bg-secondary
+                        className="flex items-center p-1 justify-center rounded-md text-muted-foreground hover:bg-secondary
                             hover:text-foreground dark:hover:text-primary transition cursor-pointer"
                         aria-label="Close"
                     >
-                        <X size={20} strokeWidth={2} />
+                        <X size={20} />
                     </button>
                 </div>
 
