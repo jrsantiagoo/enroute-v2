@@ -17,6 +17,8 @@
     --btn-border: #d9dfe5;
     --btn-danger: #e7000b;
     --btn-danger-hover: #c10007;
+    --route-map-bg: #f3f4f6;
+    --route-color: #9ca3af;
 }
 
 .dark {
@@ -33,6 +35,8 @@
     --btn-border: #1e466e;
     --btn-danger: #e7000b;
     --btn-danger-hover: #c10007;
+    --route-map-bg: #1a1d21;
+    --route-color: #6b7280;
 }
 
 /* Kills every transition, while theme switching, so it'll paint 
@@ -57,7 +61,8 @@ html.theme-switching * {
     --color-btn-border: var(--btn-border);
     --color-btn-danger: var(--btn-danger);
     --color-btn-danger-hover: var(--btn-danger-hover);
-    --color-x: var(--x);
+    --color-route-map-bg: var(--route-map-bg);
+    --color-route-color: var(--route-color);
 
     --font-sans: var(--font-geist-sans);
     --font-mono: var(--font-geist-mono);
