@@ -56,8 +56,8 @@ export default function FleetManagement() {
             } else {
                 setToast(result.message ?? "Failed to load vehicles.");
             }
-        } catch (error: any) {
-            setToast(error?.message ?? "Failed to load vehicles.");
+        } catch (error) {
+            setToast((error as Error)?.message ?? "Failed to load vehicles.");
         } finally {
             setIsLoading(false);
         }
@@ -76,8 +76,8 @@ export default function FleetManagement() {
             }
             await loadVehicles();
             setToast("Vehicle added successfully.");
-        } catch (error: any) {
-            setToast(error?.message ?? "Failed to create vehicle.");
+        } catch (error) {
+            setToast((error as Error)?.message ?? "Failed to create vehicle.");
         }
     }
 
@@ -95,8 +95,8 @@ export default function FleetManagement() {
             await loadVehicles();
             setToast("Vehicle updated successfully.");
             setEditTarget(null);
-        } catch (error: any) {
-            setToast(error?.message ?? "Failed to update vehicle.");
+        } catch (error) {
+            setToast((error as Error)?.message ?? "Failed to update vehicle.");
         }
     }
 
@@ -108,8 +108,8 @@ export default function FleetManagement() {
             }
             await loadVehicles();
             setToast("Vehicle archived.");
-        } catch (error: any) {
-            setToast(error?.message ?? "Failed to archive vehicle.");
+        } catch (error) {
+            setToast((error as Error)?.message ?? "Failed to archive vehicle.");
         }
     }
 
@@ -125,8 +125,8 @@ export default function FleetManagement() {
             }
             await loadVehicles();
             setToast("Vehicle unarchived.");
-        } catch (error: any) {
-            setToast(error?.message ?? "Failed to unarchive vehicle.");
+        } catch (error) {
+            setToast((error as Error)?.message ?? "Failed to unarchive vehicle.");
         }
     }
 

@@ -83,6 +83,7 @@ export default function Sidebar({
             <div className="flex justify-center">
                 <button
                     onClick={onToggle}
+                    aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
                     className="absolute -right-3 top-70 flex items-center justify-center 
                         w-8 h-8 rounded-full border border-border bg-background
                         hover:bg-secondary dark:hover:text-primary transition duration-300"
@@ -97,3 +98,4 @@ export default function Sidebar({
         </div>
     );
 }
+
