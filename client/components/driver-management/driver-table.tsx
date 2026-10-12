@@ -119,7 +119,7 @@ export default function DriverTable({
             {/* Table Header + Filter + Search */}
             <div className="mb-4 flex items-center justify-between">
                 <div className="flex items-center gap-2 text-base font-semibold">
-                    <Van size={21} className="text-primary-foreground" />
+                    <User size={21} className="text-primary-foreground" />
                     <h2 className="mt-1 text-foreground">Driver List</h2>
                 </div>
 
@@ -310,7 +310,7 @@ export default function DriverTable({
                                     {d.activeHours} hrs
                                 </td>
                                 <td className="px-4 py-3.5 text-[13px] align-middle border-b border-card-border">
-                                    {d.fuelConsumed}
+                                    {d.fuelConsumed} L
                                 </td>
                                 <td className="px-4 py-3.5 text-[13px] align-middle font-semibold border-b border-card-border">
                                     {d.distanceTraveled} km
