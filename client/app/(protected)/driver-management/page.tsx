@@ -14,6 +14,9 @@ export default function DriverManagement() {
     const [toast, setToast] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(true);
 
+    // -----------------------------------------------------------------------------
+    // [!!!] - TO IMPLEMENT: loading driver data from database.
+    // -----------------------------------------------------------------------------
     async function loadDrivers() {
         setIsLoading(true);
         try {
@@ -36,7 +39,46 @@ export default function DriverManagement() {
     }, []);
 
     // -----------------------------------------------------------------------------
-    // [!!!] - Driver Archive to be implemented.
+    // [!!!] - TO IMPLEMENT: creating driver record.
+    // -----------------------------------------------------------------------------
+    async function handleCreateDriver(data: Partial<mockDriver>) {
+        // try {
+        //     const payload = buildVehiclePayload(data);
+        //     const result = await vehicleApi.createVehicle(payload);
+        //     if (!result.success) {
+        //         throw new Error(result.message ?? "Failed to create vehicle.");
+        //     }
+        //     await loadVehicles();
+        //     setToast("Vehicle added successfully.");
+        // } catch (error: any) {
+        //     setToast(error?.message ?? "Failed to create vehicle.");
+        // }
+    }
+
+    // -----------------------------------------------------------------------------
+    // [!!!] - TO IMPLEMENT: updating driver record.
+    // -----------------------------------------------------------------------------
+    async function handleUpdateVehicle(data: Partial<mockDriver>) {
+        // if (!editTarget) return;
+        // try {
+        //     const payload = buildVehiclePayload(data);
+        //     const result = await vehicleApi.updateVehicle(
+        //         editTarget.vehicleId_,
+        //         payload,
+        //     );
+        //     if (!result.success) {
+        //         throw new Error(result.message ?? "Failed to update vehicle.");
+        //     }
+        //     await loadVehicles();
+        //     setToast("Vehicle updated successfully.");
+        //     setEditTarget(null);
+        // } catch (error: any) {
+        //     setToast(error?.message ?? "Failed to update vehicle.");
+        // }
+    }
+
+    // -----------------------------------------------------------------------------
+    // [!!!] - TO IMPLEMENT: driver arhiving function.
     // -----------------------------------------------------------------------------
     async function handleArchive(driver: mockDriver) {
         // try {
@@ -52,7 +94,7 @@ export default function DriverManagement() {
     }
 
     // -----------------------------------------------------------------------------
-    // [!!!] - Driver Unarchive to be implemented.
+    // [!!!] - TO IMPLEMENT: driver unarchive function.
     // -----------------------------------------------------------------------------
     async function handleUnarchive(driver: mockDriver) {
         // try {
