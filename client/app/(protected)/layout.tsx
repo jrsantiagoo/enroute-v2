@@ -5,10 +5,8 @@ import { usePersistedState } from "@/lib/hooks/use-persisted-state";
 import Sidebar from "@/components/ui/sidebar";
 import Topbar from "@/components/ui/topbar";
 
-let cachedCollapsed: boolean | null = null;
-
 // This layout wraps all protected pages (Dashboard, Route Tool, Assignment).
-export default function protectedLayout({
+export default function ProtectedLayout({
     children,
 }: {
     children: React.ReactNode;

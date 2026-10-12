@@ -10,12 +10,12 @@ const supabase = createClient(
 
 const prisma = new PrismaClient();
 
-// --- INSERT PROFILE VALUES HERE ---
+// --- INSERT PROFILE VALUES HERE (or set SEED_MANAGER_* env vars, as CI does) ---
 const MANAGER = {
-    email: " ",
-    password: " ",
-    firstname: " ",
-    lastname: " ",
+    email: process.env.SEED_MANAGER_EMAIL || " ",
+    password: process.env.SEED_MANAGER_PASSWORD || " ",
+    firstname: process.env.SEED_MANAGER_FIRSTNAME || " ",
+    lastname: process.env.SEED_MANAGER_LASTNAME || " ",
     middleInitial: "",
 };
 // ---------------------------

@@ -3,9 +3,9 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export async function apiCall(endpoint: string, options: RequestInit = {}) {
     const token = localStorage.getItem("access_token");
-    const headers: any = {
+    const headers: Record<string, string> = {
         "Content-Type": "application/json",
-        ...options.headers,
+        ...(options.headers as Record<string, string>),
     };
     if (token) {
         headers.Authorization = `Bearer ${token}`;
