@@ -7,8 +7,6 @@ import {
     Eye,
     User,
     Van,
-    Weight,
-    CircleGauge,
     Ellipsis,
     PenLine,
     RotateCcw,
@@ -295,7 +293,7 @@ export default function DriverTable({
                     <tbody>
                         {pageRows.map((d) => (
                             <tr
-                                key={d.driverId_}
+                                key={d.id_}
                                 className="border-b border-card-border text-foreground hover:bg-muted-foreground/15 transition"
                             >
                                 <td className="px-4 py-3.5 text-[13px] align-middle font-medium max-w-40 truncate border-b border-card-border">
@@ -345,9 +343,7 @@ export default function DriverTable({
                                 </td>
                                 <td className="pl-7 px-4 py-3.5 align-middle relative border-b border-card-border">
                                     <button
-                                        onClick={(e) =>
-                                            openMenu(d.driverId_, e)
-                                        }
+                                        onClick={(e) => openMenu(d.id_, e)}
                                         className="p-1 rounded-md text-muted-foreground bg-btn border border-btn-border 
                                             hover:bg-secondary hover:text-primary-foreground dark:text-foreground transition
                                             cursor-pointer"
@@ -356,7 +352,7 @@ export default function DriverTable({
                                         <Ellipsis size={16} />
                                     </button>
 
-                                    {activeMenu === d.driverId_ && anchor && (
+                                    {activeMenu === d.id_ && anchor && (
                                         <TableActionsMenu
                                             ref={menuRef}
                                             // Menu renders in a viewport-fixed portal so it pops out of the scroll container

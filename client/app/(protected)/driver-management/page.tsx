@@ -3,9 +3,11 @@
 import { useState, useEffect } from "react";
 import DriverFormBtn from "@/components/driver-management/driver-form";
 import DriverTable from "@/components/driver-management/driver-table";
+
+import DriverDetailsModal from "@/components/driver-management/driver-details";
 import TableSkeleton from "@/components/ui/table-skeleton";
 import Toast from "@/components/ui/toast";
-import type { mockDriver } from "@/lib/mock/driver-mock-data";
+import { mockDriverData, type mockDriver } from "@/lib/mock/driver-mock-data";
 
 export default function DriverManagement() {
     const [drivers, setDrivers] = useState<mockDriver[]>([]);
@@ -27,6 +29,7 @@ export default function DriverManagement() {
             // } else {
             //     setToast(result.message ?? "Failed to load drivers.");
             // }
+            setDrivers(mockDriverData);
         } catch (error: any) {
             setToast(error?.message ?? "Failed to load drivers.");
         } finally {
@@ -146,20 +149,20 @@ export default function DriverManagement() {
                 />
             )} */}
 
-            {/* {viewTarget && (
-                <VehicleDetailsModal
+            {viewTarget && (
+                <DriverDetailsModal
                     initialData={viewTarget}
                     onClose={() => setViewTarget(null)}
                 />
-            )} */}
+            )}
 
-            {/* {toast && (
+            {toast && (
                 <Toast
                     message={toast}
                     position="bottom-right"
                     onDismiss={() => setToast(null)}
                 />
-            )} */}
+            )}
         </div>
     );
 }

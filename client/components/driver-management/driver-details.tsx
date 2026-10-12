@@ -21,7 +21,7 @@ interface DriverDetailsProps {
     onClose: () => void;
 }
 
-export default function VehicleDetailsModal({
+export default function DriverDetailsModal({
     initialData,
     onClose,
 }: DriverDetailsProps) {
