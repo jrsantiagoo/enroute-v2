@@ -3,13 +3,14 @@
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import {
-    LayoutDashboard,
-    Map,
-    ClipboardList,
-    Van,
-    Gauge,
     ChevronsLeft,
     ChevronsRight,
+    ClipboardList,
+    Gauge,
+    LayoutDashboard,
+    Map,
+    User,
+    Van,
 } from "lucide-react";
 
 interface SidebarProps {
@@ -23,6 +24,7 @@ const navLinks = [
     { href: "/route-tool", label: "Routing Tool", icon: Map },
     { href: "/assignment", label: "Assignment", icon: ClipboardList },
     { href: "/fleet-management", label: "Fleet Management", icon: Van },
+    { href: "/driver-management", label: "Driver Management", icon: User },
 ];
 
 export default function Sidebar({
