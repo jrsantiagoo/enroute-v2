@@ -1,0 +1,6 @@
+# Local Supabase stack started by CI for the e2e job (`npx supabase start`).
+# Not linked to the hosted project; every unset key uses the CLI default.
+project_id = "route-management-system"
+
+[db.seed]
+enabled = false
