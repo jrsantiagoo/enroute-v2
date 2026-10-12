@@ -298,7 +298,7 @@ export default function DriverTable({
                                 key={d.driverId_}
                                 className="border-b border-card-border text-foreground hover:bg-muted-foreground/15 transition"
                             >
-                                <td className="px-4 py-3.5 text-[13px] align-middle font-medium border-b border-card-border">
+                                <td className="px-4 py-3.5 text-[13px] align-middle font-medium max-w-40 truncate border-b border-card-border">
                                     <div className="font-semibold">
                                         {d.driverName}
                                     </div>
