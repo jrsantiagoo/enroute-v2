@@ -1,9 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import DriverFormBtn from "@/components/driver-management/driver-form";
+import DriverFormBtn from "@/components/driver-management/driver-form-btn";
 import DriverTable from "@/components/driver-management/driver-table";
-
+import DriverFormModal from "@/components/driver-management/driver-form-modal";
 import DriverDetailsModal from "@/components/driver-management/driver-details";
 import TableSkeleton from "@/components/ui/table-skeleton";
 import Toast from "@/components/ui/toast";
@@ -141,13 +141,13 @@ export default function DriverManagement() {
                 />
             )}
 
-            {/* {editTarget && (
-                <VehicleFormModal
+            {editTarget && (
+                <DriverFormModal
                     initialData={editTarget}
                     onClose={() => setEditTarget(null)}
                     onSave={handleUpdateVehicle}
                 />
-            )} */}
+            )}
 
             {viewTarget && (
                 <DriverDetailsModal

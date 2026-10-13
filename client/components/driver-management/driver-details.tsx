@@ -7,7 +7,6 @@ import {
     Car,
     Clock,
     Fuel,
-    Gauge,
     Route,
     User,
     X,
@@ -70,37 +69,23 @@ export default function DriverDetailsModal({
                         <div className="flex flex-col">
                             <div className="flex items-center gap-2 text-base text-muted-foreground">
                                 <User size={23} />
-                                <h2 className="mt-1">Driver ID</h2>
+                                <h2 className="mt-1">Driver Name</h2>
                             </div>
                             <div className="ml-8 text-foreground">
                                 {initialData?.driverName}
-                                <span className="text-sm text-muted-foreground">
-                                    ({initialData?.driverId})
-                                </span>
                             </div>
                         </div>
 
                         <div className="flex flex-col">
                             <div className="flex items-center gap-2 text-base text-muted-foreground">
-                                <Clock size={23} />
-                                <h2 className="mt-1">Active Hours</h2>
+                                <User size={23} />
+                                <h2 className="mt-1">Driver ID</h2>
                             </div>
                             <div className="ml-8 text-foreground">
-                                {initialData?.activeHours} hrs
+                                {initialData?.driverId}
                             </div>
                         </div>
 
-                        <div className="flex flex-col">
-                            <div className="flex items-center gap-2 text-base text-muted-foreground">
-                                <Calendar size={21} />
-                                <h2 className="mt-1">Fuel Consumed</h2>
-                            </div>
-                            <div className="ml-8 text-foreground">
-                                {initialData?.fuelConsumed} L
-                            </div>
-                        </div>
-
-                        {/* Second Row */}
                         <div className="flex flex-col">
                             <div className="flex items-center gap-2 text-base text-muted-foreground">
                                 <Activity size={21} />
@@ -113,22 +98,42 @@ export default function DriverDetailsModal({
                             </div>
                         </div>
 
+                        {/* Second Row */}
+                        <div className="flex flex-col">
+                            <div className="flex items-center gap-2 text-base text-muted-foreground">
+                                <Clock size={23} />
+                                <h2 className="mt-1">Active Hours</h2>
+                            </div>
+                            <div className="ml-8 text-foreground">
+                                {initialData?.activeHours} hrs
+                            </div>
+                        </div>
+
+                        <div className="flex flex-col">
+                            <div className="flex items-center gap-2 text-base text-muted-foreground">
+                                <Fuel size={21} />
+                                <h2 className="mt-1">Fuel Consumed</h2>
+                            </div>
+                            <div className="ml-8 text-foreground">
+                                {initialData?.fuelConsumed} L
+                            </div>
+                        </div>
+
                         <div className="flex flex-col">
                             <div className="flex items-center gap-2 text-base text-muted-foreground">
                                 <Route size={21} />
                                 <h2 className="mt-1">Distance Travelled</h2>
                             </div>
                             <div className="ml-8 text-foreground">
-                                {initialData?.distanceTraveled}
+                                {initialData?.distanceTraveled} km
                             </div>
                         </div>
 
+                        {/* Third Row */}
                         <div className="flex flex-col">
                             <div className="flex items-center gap-2 text-base text-muted-foreground">
-                                <User size={21} />
-                                <h2 className="mt-1">
-                                    Freq. used Vehicle Type
-                                </h2>
+                                <Car size={23} />
+                                <h2 className="mt-1">Preferred Vehicle Type</h2>
                             </div>
                             <div className="ml-8 text-foreground">
                                 {initialData?.mostDrivenVehicleType == "" ? (
@@ -141,10 +146,9 @@ export default function DriverDetailsModal({
                             </div>
                         </div>
 
-                        {/* Third Row */}
                         <div className="flex flex-col">
                             <div className="flex items-center gap-2 text-base text-muted-foreground">
-                                <Gauge size={21} />
+                                <Car size={23} />
                                 <h2 className="mt-1">Current Top 3 Vehicles</h2>
                             </div>
                             <div className="ml-8 text-foreground">

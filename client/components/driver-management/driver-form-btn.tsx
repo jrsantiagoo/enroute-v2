@@ -3,7 +3,7 @@
 import { Plus } from "lucide-react";
 import { useState } from "react";
 // import type { Vehicle } from "@/lib/types/vehicle";
-// import VehicleFormModal from "./vehicle-form-modal";
+import DriverFormModal from "@/components/driver-management/driver-form-modal";
 
 interface VehicleFormProps {
     // onCreate?: (data: Partial<Vehicle>) => void;
@@ -24,15 +24,15 @@ export default function DriverFormBtn(/*{ onCreate }: VehicleFormProps*/) {
                 Add Driver
             </button>
 
-            {/* {open && (
-                <VehicleFormModal
+            {open && (
+                <DriverFormModal
                     onClose={() => setOpen(false)}
                     onSave={(data) => {
                         setOpen(false);
-                        onCreate?.(data);
+                        // onCreate?.(data);
                     }}
                 />
-            )} */}
+            )}
         </div>
     );
 }
