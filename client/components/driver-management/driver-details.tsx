@@ -101,6 +101,41 @@ export default function DriverDetailsModal({
                         {/* Second Row */}
                         <div className="flex flex-col">
                             <div className="flex items-center gap-2 text-base text-muted-foreground">
+                                <Car size={23} />
+                                <h2 className="mt-1">Preferred Vehicle Type</h2>
+                            </div>
+                            <div className="ml-8 text-foreground">
+                                {initialData?.mostDrivenVehicleType == "" ? (
+                                    <div className="italic">
+                                        No assigned vehicle
+                                    </div>
+                                ) : (
+                                    initialData?.mostDrivenVehicleType
+                                )}
+                            </div>
+                        </div>
+
+                        <div className="flex flex-col">
+                            <div className="flex items-center gap-2 text-base text-muted-foreground">
+                                <Car size={23} />
+                                <h2 className="mt-1">Current Top 3 Vehicles</h2>
+                            </div>
+                            <div className="ml-8 text-foreground">
+                                {initialData?.topThreeVehicles}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Metric Details */}
+                <div className="flex flex-col p-8 mt-4 gap-3 rounded-xl bg-card border border-card-border shadow-md">
+                    <h2 className="text-xl font-semibold text-foreground -mt-2 mb-3">
+                        Driver Metrics
+                    </h2>
+
+                    <div className="grid grid-cols-3 gap-6 w-full font-semibold">
+                        <div className="flex flex-col">
+                            <div className="flex items-center gap-2 text-base text-muted-foreground">
                                 <Clock size={23} />
                                 <h2 className="mt-1">Active Hours</h2>
                             </div>
@@ -126,33 +161,6 @@ export default function DriverDetailsModal({
                             </div>
                             <div className="ml-8 text-foreground">
                                 {initialData?.distanceTraveled} km
-                            </div>
-                        </div>
-
-                        {/* Third Row */}
-                        <div className="flex flex-col">
-                            <div className="flex items-center gap-2 text-base text-muted-foreground">
-                                <Car size={23} />
-                                <h2 className="mt-1">Preferred Vehicle Type</h2>
-                            </div>
-                            <div className="ml-8 text-foreground">
-                                {initialData?.mostDrivenVehicleType == "" ? (
-                                    <div className="italic">
-                                        No assigned vehicle
-                                    </div>
-                                ) : (
-                                    initialData?.mostDrivenVehicleType
-                                )}
-                            </div>
-                        </div>
-
-                        <div className="flex flex-col">
-                            <div className="flex items-center gap-2 text-base text-muted-foreground">
-                                <Car size={23} />
-                                <h2 className="mt-1">Current Top 3 Vehicles</h2>
-                            </div>
-                            <div className="ml-8 text-foreground">
-                                {initialData?.topThreeVehicles}
                             </div>
                         </div>
                     </div>
