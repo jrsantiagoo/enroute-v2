@@ -3,13 +3,14 @@
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import {
-    LayoutDashboard,
-    Map,
-    ClipboardList,
-    Van,
-    Gauge,
     ChevronsLeft,
     ChevronsRight,
+    ClipboardList,
+    Gauge,
+    LayoutDashboard,
+    Map,
+    User,
+    Van,
 } from "lucide-react";
 
 interface SidebarProps {
@@ -23,6 +24,7 @@ const navLinks = [
     { href: "/route-tool", label: "Routing Tool", icon: Map },
     { href: "/assignment", label: "Assignment", icon: ClipboardList },
     { href: "/fleet-management", label: "Fleet Management", icon: Van },
+    { href: "/driver-management", label: "Driver Management", icon: User },
 ];
 
 export default function Sidebar({
@@ -53,7 +55,7 @@ export default function Sidebar({
                             EnRoute
                         </p>
                         <p className="text-[10px] text-muted-foreground">
-                            Version 1.0
+                            Version 2.0
                         </p>
                     </div>
                 )}
@@ -83,7 +85,7 @@ export default function Sidebar({
             <div className="flex justify-center">
                 <button
                     onClick={onToggle}
-                    className="absolute -right-3 top-70 flex items-center justify-center 
+                    className="absolute -right-3 top-47 flex items-center justify-center 
                         w-8 h-8 rounded-full border border-border bg-background
                         hover:bg-secondary dark:hover:text-primary transition duration-300"
                 >

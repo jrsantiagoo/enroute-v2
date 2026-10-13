@@ -121,7 +121,7 @@ export default function loginPage() {
 
                     <div className="flex items-center justify-between text-xs tracking-[0.2em] text-slate-500">
                         <span>ENROUTE</span>
-                        <span>V1</span>
+                        <span>V2</span>
                     </div>
                 </div>
 
