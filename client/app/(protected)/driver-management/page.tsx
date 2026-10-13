@@ -7,12 +7,12 @@ import DriverFormModal from "@/components/driver-management/driver-form-modal";
 import DriverDetailsModal from "@/components/driver-management/driver-details";
 import TableSkeleton from "@/components/ui/table-skeleton";
 import Toast from "@/components/ui/toast";
-import { mockDriverData, type mockDriver } from "@/lib/mock/driver-mock-data";
+import { mockDriverData, type MockDriver } from "@/lib/mock/driver-mock-data";
 
 export default function DriverManagement() {
-    const [drivers, setDrivers] = useState<mockDriver[]>([]);
-    const [editTarget, setEditTarget] = useState<mockDriver | null>(null);
-    const [viewTarget, setViewTarget] = useState<mockDriver | null>(null);
+    const [drivers, setDrivers] = useState<MockDriver[]>([]);
+    const [editTarget, setEditTarget] = useState<MockDriver | null>(null);
+    const [viewTarget, setViewTarget] = useState<MockDriver | null>(null);
     const [toast, setToast] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(true);
 
@@ -44,7 +44,7 @@ export default function DriverManagement() {
     // -----------------------------------------------------------------------------
     // [!!!] - TO IMPLEMENT: creating driver record.
     // -----------------------------------------------------------------------------
-    async function handleCreateDriver(data: Partial<mockDriver>) {
+    async function handleCreateDriver(data: Partial<MockDriver>) {
         // try {
         //     const payload = buildVehiclePayload(data);
         //     const result = await vehicleApi.createVehicle(payload);
@@ -61,7 +61,7 @@ export default function DriverManagement() {
     // -----------------------------------------------------------------------------
     // [!!!] - TO IMPLEMENT: updating driver record.
     // -----------------------------------------------------------------------------
-    async function handleUpdateVehicle(data: Partial<mockDriver>) {
+    async function handleUpdateVehicle(data: Partial<MockDriver>) {
         // if (!editTarget) return;
         // try {
         //     const payload = buildVehiclePayload(data);
@@ -83,7 +83,7 @@ export default function DriverManagement() {
     // -----------------------------------------------------------------------------
     // [!!!] - TO IMPLEMENT: driver arhiving function.
     // -----------------------------------------------------------------------------
-    async function handleArchive(driver: mockDriver) {
+    async function handleArchive(driver: MockDriver) {
         // try {
         //     const result = await vehicleApi.archiveVehicle(vehicle.vehicleId_);
         //     if (!result.success) {
@@ -99,7 +99,7 @@ export default function DriverManagement() {
     // -----------------------------------------------------------------------------
     // [!!!] - TO IMPLEMENT: driver unarchive function.
     // -----------------------------------------------------------------------------
-    async function handleUnarchive(driver: mockDriver) {
+    async function handleUnarchive(driver: MockDriver) {
         // try {
         //     const result = await vehicleApi.unarchiveVehicle(
         //         vehicle.vehicleId_,
