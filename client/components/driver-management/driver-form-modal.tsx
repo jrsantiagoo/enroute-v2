@@ -1,26 +1,16 @@
 "use client";
 
-import {
-    Activity,
-    Building2,
-    Calendar,
-    Car,
-    Fuel,
-    Gauge,
-    User,
-    Weight,
-    X,
-} from "lucide-react";
+import { Activity, Car, Fuel, Gauge, User, Weight, X } from "lucide-react";
 import { useState, useEffect } from "react";
 import FormSelect from "../ui/form-select";
 // import type { Vehicle } from "@/lib/types/vehicle";
-import { mockDriver } from "@/lib/mock/driver-mock-data";
+import { MockDriver } from "@/lib/mock/driver-mock-data";
 // import * as vehicleApi from "@/lib/api/vehicles";
 
 interface DriverFormModalProps {
-    initialData?: mockDriver | null;
+    initialData?: MockDriver | null;
     onClose: () => void;
-    onSave: (data: Partial<mockDriver>) => void | Promise<void>;
+    onSave: (data: Partial<MockDriver>) => void | Promise<void>;
 }
 
 export default function DriverFormModal({

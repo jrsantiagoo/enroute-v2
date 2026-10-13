@@ -1,4 +1,4 @@
-export interface mockDriver {
+export interface MockDriver {
     id_: string;
     driverId: string;
     driverName: string;
@@ -15,7 +15,7 @@ export interface mockDriver {
     lastModified?: string;
 }
 
-export const mockDriverData: mockDriver[] = [
+export const mockDriverData: MockDriver[] = [
     {
         id_: "MD-0001",
         driverId: "MDRV-0001",

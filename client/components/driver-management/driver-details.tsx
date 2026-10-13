@@ -11,12 +11,12 @@ import {
     User,
     X,
 } from "lucide-react";
-import type { mockDriver } from "@/lib/mock/driver-mock-data";
+import type { MockDriver } from "@/lib/mock/driver-mock-data";
 import StatusBadge from "../ui/status-badge";
 import { formatDateTime } from "@/lib/routing/formatters";
 
 interface DriverDetailsProps {
-    initialData?: mockDriver | null;
+    initialData?: MockDriver | null;
     onClose: () => void;
 }
 

@@ -16,7 +16,7 @@ import {
     Fuel,
     Route,
 } from "lucide-react";
-import type { mockDriver } from "@/lib/mock/driver-mock-data";
+import type { MockDriver } from "@/lib/mock/driver-mock-data";
 import { useSort } from "@/lib/hooks/useSort";
 import SortableHeader from "@/components/ui/sortable-header";
 import FilterSelect from "../ui/filter-select";
@@ -28,11 +28,11 @@ import { formatDateTime } from "@/lib/routing/formatters";
 const ROWS_PER_PAGE_OPTIONS = [5, 10, 20];
 
 interface DriverProps {
-    drivers: mockDriver[];
-    onView?: (drivers: mockDriver) => void;
-    onEdit?: (drivers: mockDriver) => void;
-    onArchive?: (drivers: mockDriver) => void;
-    onUnarchive?: (drivers: mockDriver) => void;
+    drivers: MockDriver[];
+    onView?: (drivers: MockDriver) => void;
+    onEdit?: (drivers: MockDriver) => void;
+    onArchive?: (drivers: MockDriver) => void;
+    onUnarchive?: (drivers: MockDriver) => void;
 }
 
 export default function DriverTable({
@@ -51,7 +51,7 @@ export default function DriverTable({
     const [rowsPerPage, setRowsPerPage] = useState(10);
 
     // Used to determine whether a vehicle belongs to the Active or Archived view
-    const isArchived = (d: mockDriver) => Boolean(d.archived || d.archivedAt);
+    const isArchived = (d: MockDriver) => Boolean(d.archived || d.archivedAt);
 
     // Filter trips by the selected view, then by route name or driver ID
     const filtered = drivers
@@ -67,7 +67,7 @@ export default function DriverTable({
 
     // Sort records by the currently active column
     const getDriverVal = useCallback(
-        (d: mockDriver, key: string) => {
+        (d: MockDriver, key: string) => {
             switch (key) {
                 case "driver_name":
                     return d.driverName;
