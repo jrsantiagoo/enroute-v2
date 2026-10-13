@@ -55,7 +55,7 @@ export default function Sidebar({
                             EnRoute
                         </p>
                         <p className="text-[10px] text-muted-foreground">
-                            Version 1.0
+                            Version 2.0
                         </p>
                     </div>
                 )}
