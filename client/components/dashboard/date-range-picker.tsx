@@ -145,7 +145,10 @@ export default function DateRangePicker({
                         ).map((p) => (
                             <button
                                 key={p}
-                                onClick={() => handlePresetClick(p)}
+                                onClick={() => {
+                                    handlePresetClick(p);
+                                    setOpen(false);
+                                }}
                                 className={`px-2 py-1 text-sm rounded-md transition ${
                                     preset === p
                                         ? "bg-primary text-primary-foreground"
@@ -200,3 +203,4 @@ export default function DateRangePicker({
         </div>
     );
 }
+

@@ -1,0 +1,181 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main, dev]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }} # never cancel a main run mid-migration
+
+jobs:
+  server:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: server
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_PASSWORD: postgres
+        ports: ["5432:5432"]
+        options: --health-cmd pg_isready --health-interval 5s --health-timeout 5s --health-retries 10
+    env: # prisma.config.ts requires both, even for `npm ci` (postinstall generate)
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/postgres
+      DIRECT_URL: postgresql://postgres:postgres@localhost:5432/postgres
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: server/package-lock.json
+      - run: npm ci
+      - run: npm test
+      - run: npx prisma validate
+      - name: Migrations apply to an empty database
+        run: npx prisma migrate deploy
+      - name: schema.prisma matches migrations (drift)
+        run: npx prisma migrate diff --from-url "$DATABASE_URL" --to-schema-datamodel prisma/schema.prisma --exit-code
+      - name: Server boots
+        env:
+          SUPABASE_URL: http://127.0.0.1:54321
+          SUPABASE_SERVICE_ROLE_KEY: ci-dummy
+        run: |
+          node src/server.js &
+          curl -fsS --retry 30 --retry-delay 1 --retry-connrefused http://localhost:8080/health
+
+  # CD (main only): migrate prod, then release exactly this commit on Render.
+  deploy:
+    needs: [server, client]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    environment: production # holds the secrets below; restrict it to main (README CI/CD)
+    defaults:
+      run:
+        working-directory: server
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: server/package-lock.json
+      - run: npm ci
+        env: # prisma.config.ts requires both for postinstall generate; no DB is contacted
+          DATABASE_URL: postgresql://unused
+          DIRECT_URL: postgresql://unused
+      - name: Apply migrations to production
+        env: # Supabase session-pooler URL (IPv4)
+          DATABASE_URL: ${{ secrets.DIRECT_URL }}
+          DIRECT_URL: ${{ secrets.DIRECT_URL }}
+        run: |
+          : "${DIRECT_URL:?Secret DIRECT_URL is not set in the production environment - see README CI/CD}"
+          npx prisma migrate deploy
+      - name: Deploy backend to Render
+        env:
+          RENDER_DEPLOY_HOOK_URL: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+        run: |
+          : "${RENDER_DEPLOY_HOOK_URL:?Secret RENDER_DEPLOY_HOOK_URL is not set in the production environment - see README CI/CD}"
+          curl -fsS -X POST "$RENDER_DEPLOY_HOOK_URL&ref=$GITHUB_SHA"
+
+  client:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: client
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: client/package-lock.json
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run build
+        env:
+          NEXT_PUBLIC_API_URL: http://localhost:8080
+
+  e2e:
+    if: github.event_name == 'pull_request'
+    name: e2e (${{ matrix.name }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40 # also keeps every run inside the 1h local-Supabase token lifetime
+    strategy:
+      fail-fast: false
+      matrix: # one fresh DB per browser, so browsers never see each other's test data
+        include:
+          - name: chromium
+            projects: --project=chromium --project=chromium-logged-out
+            browsers: chromium
+          - name: firefox
+            projects: --project=firefox
+            browsers: chromium firefox # the setup project logs in with chromium
+    env:
+      TEST_MANAGER_EMAIL: e2e-manager@example.com
+      TEST_MANAGER_PASSWORD: e2e-password-123
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            server/package-lock.json
+            client/package-lock.json
+      - name: Start local Supabase (auth + Postgres only)
+        run: npx --yes supabase@2.119.0 start -x realtime,storage-api,imgproxy,mailpit,postgrest,postgres-meta,studio,edge-runtime,logflare,vector,supavisor
+      - name: Export local Supabase env
+        run: |
+          npx --yes supabase@2.119.0 status -o json > "$RUNNER_TEMP/supabase.json"
+          api=$(jq -er .API_URL "$RUNNER_TEMP/supabase.json")
+          key=$(jq -er .SERVICE_ROLE_KEY "$RUNNER_TEMP/supabase.json")
+          db=$(jq -er .DB_URL "$RUNNER_TEMP/supabase.json")
+          printf 'SUPABASE_URL=%s\nSUPABASE_SERVICE_ROLE_KEY=%s\nDATABASE_URL=%s\nDIRECT_URL=%s\n' "$api" "$key" "$db" "$db" >> "$GITHUB_ENV"
+      - run: npm ci
+      - name: Server - install, migrate, seed, start
+        working-directory: server
+        env:
+          SEED_MANAGER_EMAIL: ${{ env.TEST_MANAGER_EMAIL }}
+          SEED_MANAGER_PASSWORD: ${{ env.TEST_MANAGER_PASSWORD }}
+          SEED_MANAGER_FIRSTNAME: E2E
+          SEED_MANAGER_LASTNAME: Manager
+        run: |
+          npm ci
+          npx prisma migrate deploy
+          node scripts/seed-manager.js
+          npm run seed:test -- --yes
+          PORT=8080 ORIGIN_URI=http://localhost:3000 nohup node src/server.js > "$RUNNER_TEMP/server.log" 2>&1 &
+      - name: Client - build, start
+        working-directory: client
+        env:
+          NEXT_PUBLIC_API_URL: http://localhost:8080
+        run: |
+          npm ci
+          npm run build
+          nohup npm start > "$RUNNER_TEMP/client.log" 2>&1 &
+      - run: npx playwright install --with-deps ${{ matrix.browsers }}
+      - name: Wait for apps
+        run: |
+          curl -fsS --retry 30 --retry-delay 2 --retry-connrefused http://localhost:8080/health
+          curl -fsS --retry 30 --retry-delay 2 --retry-connrefused -o /dev/null http://localhost:3000
+      - run: npx playwright test ${{ matrix.projects }}
+        timeout-minutes: 25 # a hang fails the step (not the job), so the diagnostics below still run
+      - if: failure()
+        run: cat "$RUNNER_TEMP/server.log" "$RUNNER_TEMP/client.log"
+      - if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: playwright-report-${{ matrix.name }}
+          path: playwright-report/
+          retention-days: 7

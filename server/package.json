@@ -4,7 +4,11 @@
     "description": "",
     "main": "index.js",
     "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1",
+        "test": "vitest run",
+        "test:watch": "vitest",
+        "test:unit": "vitest run tests/unit",
+        "test:integration": "vitest run tests/integration",
+        "seed:test": "node prisma/seed-test.js",
         "start": "node src/server.js",
         "dev": "nodemon src/server.js",
         "postinstall": "prisma generate"
@@ -23,6 +27,8 @@
     },
     "devDependencies": {
         "nodemon": "^3.1.14",
-        "prisma": "^6.19.3"
+        "prisma": "^6.19.3",
+        "supertest": "^7.2.2",
+        "vitest": "^3.2.6"
     }
 }

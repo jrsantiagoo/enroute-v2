@@ -8,7 +8,7 @@ import * as authApi from "@/lib/api/auth";
 import { useTheme } from "@/lib/theme-context";
 
 //login page with email and password fields, error handling, and loading state. On successful login, navigate to dashboard page
-export default function loginPage() {
+export default function LoginPage() {
     const router = useRouter();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -305,3 +305,4 @@ export default function loginPage() {
         </div>
     );
 }
+

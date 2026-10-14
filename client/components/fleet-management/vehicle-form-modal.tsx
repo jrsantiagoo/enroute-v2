@@ -137,7 +137,7 @@ export default function VehicleFormModal({
                 const makes = await vehicleApi.getVehicleMakes();
                 if (makes.success) {
                     setMakeOptions(
-                        makes.data.map((make: any) => ({
+                        makes.data.map((make: { id_: string; name: string }) => ({
                             label: make.name,
                             value: make.id_,
                         })),
@@ -153,7 +153,7 @@ export default function VehicleFormModal({
                 const models = await vehicleApi.getVehicleModels();
                 if (models.success) {
                     setModelOptions(
-                        models.data.map((model: any) => ({
+                        models.data.map((model: { id_: string; name: string }) => ({
                             label: model.name,
                             value: model.id_,
                         })),
