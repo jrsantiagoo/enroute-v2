@@ -106,8 +106,7 @@ export default function DriverView({
             let matchesDate = true;
             if (range.preset !== "allTime" && d.date) {
                 const itemDate = d.date.split("T")[0];
-                matchesDate =
-                    itemDate >= range.start && itemDate <= range.end;
+                matchesDate = itemDate >= range.start && itemDate <= range.end;
             }
 
             let matchesDistance = true;
