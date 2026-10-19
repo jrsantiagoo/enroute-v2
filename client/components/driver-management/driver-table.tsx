@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import {
     Search,
     ArchiveIcon,
@@ -15,24 +15,32 @@ import {
     ChevronRight,
     Fuel,
     Route,
+    X,
 } from "lucide-react";
 import type { MockDriver } from "@/lib/mock/driver-mock-data";
 import { useSort } from "@/lib/hooks/useSort";
 import SortableHeader from "@/components/ui/sortable-header";
 import FilterSelect from "../ui/filter-select";
+import DateRangePicker, {
+    type Preset,
+    type DateRange,
+} from "@/components/dashboard/date-range-picker";
 import { useTableActionsMenu } from "@/lib/hooks/useTableActionsMenu";
 import { TableActionsMenu } from "@/components/ui/table-actions-menu";
 import StatusBadge from "@/components/ui/status-badge";
 import { formatDateTime } from "@/lib/routing/formatters";
 
 const ROWS_PER_PAGE_OPTIONS = [5, 10, 20];
+const DISTANCE_OPTIONS = ["< 50 km", "50 - 100 km", "> 100 km"];
+const FUEL_OPTIONS = ["< 5 L", "5 - 15 L", "> 15 L"];
+const HOURS_OPTIONS = ["< 4 hrs", "4 - 8 hrs", "> 8 hrs"];
 
 interface DriverProps {
     drivers: MockDriver[];
-    onView?: (drivers: MockDriver) => void;
-    onEdit?: (drivers: MockDriver) => void;
-    onArchive?: (drivers: MockDriver) => void;
-    onUnarchive?: (drivers: MockDriver) => void;
+    onView?: (driver: MockDriver) => void;
+    onEdit?: (driver: MockDriver) => void;
+    onArchive?: (driver: MockDriver) => void;
+    onUnarchive?: (driver: MockDriver) => void;
 }
 
 export default function DriverTable({
@@ -43,29 +51,135 @@ export default function DriverTable({
     onUnarchive,
 }: DriverProps) {
     const [search, setSearch] = useState("");
-    // Toggles between the Active and Archived views
     const [view, setView] = useState<"active" | "archived">("active");
     const { activeMenu, setActiveMenu, anchor, menuRef, openMenu } =
         useTableActionsMenu();
     const [page, setPage] = useState(1);
     const [rowsPerPage, setRowsPerPage] = useState(10);
 
-    // Used to determine whether a vehicle belongs to the Active or Archived view
+    // Date Range state
+    const [range, setRange] = useState<{
+        start: string;
+        end: string;
+        preset: Preset;
+    }>(() => {
+        const now = new Date();
+        const today = now.toISOString().slice(0, 10);
+        const dayOfWeek = now.getDay();
+        const diff = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+        const monday = new Date(
+            now.getFullYear(),
+            now.getMonth(),
+            now.getDate() - diff,
+        );
+        const firstOfWeek = `${monday.getFullYear()}-${String(
+            monday.getMonth() + 1,
+        ).padStart(2, "0")}-${String(monday.getDate()).padStart(2, "0")}`;
+        return { start: firstOfWeek, end: today, preset: "thisWeek" };
+    });
+
+    // Filter states
+    const [distanceFilter, setDistanceFilter] = useState("All");
+    const [fuelFilter, setFuelFilter] = useState("All");
+    const [hoursFilter, setHoursFilter] = useState("All");
+    const [statusFilter, setStatusFilter] = useState("All");
+
+    const hasActiveFilters =
+        distanceFilter !== "All" ||
+        fuelFilter !== "All" ||
+        hoursFilter !== "All" ||
+        statusFilter !== "All";
+
+    const handleClearFilters = () => {
+        setDistanceFilter("All");
+        setFuelFilter("All");
+        setHoursFilter("All");
+        setStatusFilter("All");
+        setPage(1);
+    };
+
     const isArchived = (d: MockDriver) => Boolean(d.archived || d.archivedAt);
 
-    // Filter trips by the selected view, then by route name or driver ID
-    const filtered = drivers
-        .filter((d) => (view === "archived" ? isArchived(d) : !isArchived(d)))
-        .filter((d) => {
-            const q = search.toLowerCase();
-            const matchesSearch =
-                d.driverName?.toLowerCase().includes(q) ||
-                d.driverId?.toLowerCase().includes(q) ||
-                false;
-            return matchesSearch;
-        });
+    const statusOptions = useMemo(() => {
+        const statuses = Array.from(
+            new Set(drivers.map((d) => d.status).filter(Boolean)),
+        );
+        return statuses.length > 0 ? statuses : ["ACTIVE", "INACTIVE"];
+    }, [drivers]);
 
-    // Sort records by the currently active column
+    // Combined filtering: tab view, date range, search query, and numeric/status filters
+    const filtered = useMemo(() => {
+        return drivers
+            .filter((d) =>
+                view === "archived" ? isArchived(d) : !isArchived(d),
+            )
+            .filter((d) => {
+                const q = search.toLowerCase();
+                const matchesSearch =
+                    !search ||
+                    d.driverName?.toLowerCase().includes(q) ||
+                    d.driverId?.toLowerCase().includes(q);
+
+                let matchesDate = true;
+                if (range.preset !== "allTime" && d.date) {
+                    const itemDate = d.date.split("T")[0];
+                    matchesDate =
+                        itemDate >= range.start && itemDate <= range.end;
+                }
+
+                let matchesDistance = true;
+                if (distanceFilter === "< 50 km") {
+                    matchesDistance = d.distanceTraveled < 50;
+                } else if (distanceFilter === "50 - 100 km") {
+                    matchesDistance =
+                        d.distanceTraveled >= 50 && d.distanceTraveled <= 100;
+                } else if (distanceFilter === "> 100 km") {
+                    matchesDistance = d.distanceTraveled > 100;
+                }
+
+                let matchesFuel = true;
+                if (fuelFilter === "< 5 L") {
+                    matchesFuel = d.fuelConsumed < 5;
+                } else if (fuelFilter === "5 - 15 L") {
+                    matchesFuel = d.fuelConsumed >= 5 && d.fuelConsumed <= 15;
+                } else if (fuelFilter === "> 15 L") {
+                    matchesFuel = d.fuelConsumed > 15;
+                }
+
+                let matchesHours = true;
+                if (hoursFilter === "< 4 hrs") {
+                    matchesHours = d.activeHours < 4;
+                } else if (hoursFilter === "4 - 8 hrs") {
+                    matchesHours = d.activeHours >= 4 && d.activeHours <= 8;
+                } else if (hoursFilter === "> 8 hrs") {
+                    matchesHours = d.activeHours > 8;
+                }
+
+                const matchesStatus =
+                    statusFilter === "All" ||
+                    d.status.toUpperCase() === statusFilter.toUpperCase();
+
+                return (
+                    matchesSearch &&
+                    matchesDate &&
+                    matchesDistance &&
+                    matchesFuel &&
+                    matchesHours &&
+                    matchesStatus
+                );
+            });
+    }, [
+        drivers,
+        view,
+        search,
+        range,
+        distanceFilter,
+        fuelFilter,
+        hoursFilter,
+        statusFilter,
+    ]);
+
+    // Sorting column accessor
     const getDriverVal = useCallback(
         (d: MockDriver, key: string) => {
             switch (key) {
@@ -82,8 +196,6 @@ export default function DriverTable({
                 case "top3_vehicles":
                     return d.topThreeVehicles;
                 case "archivedAt":
-                    // The date column sorts by Last Modified in the Active tab and
-                    // by Archived At in the Archived tab, matching what it shows.
                     return view === "archived"
                         ? (d.archivedAt ?? "")
                         : (d.lastModified ?? "");
@@ -95,13 +207,14 @@ export default function DriverTable({
         },
         [view],
     );
+
     const {
         sorted: sortedDrivers,
         state: sortState,
         toggle: toggleSort,
     } = useSort(filtered, getDriverVal);
 
-    // Paginate the sorted, filtered vehicles into the current page's slice
+    // Pagination slice
     const totalPages = Math.max(
         1,
         Math.ceil(sortedDrivers.length / rowsPerPage),
@@ -114,35 +227,45 @@ export default function DriverTable({
 
     return (
         <div className="rounded-xl bg-card p-6 shadow-lg shadow-primary border border-card-border">
-            {/* Table Header + Filter + Search */}
-            <div className="mb-4 flex items-center justify-between">
+            {/* Header + View Toggle + DateRangePicker + Search */}
+            <div className="mb-4 flex flex-wrap items-center justify-between gap-4">
                 <div className="flex items-center gap-2 text-base font-semibold">
                     <User size={21} className="text-primary-foreground" />
                     <h2 className="mt-1 text-foreground">Driver List</h2>
                 </div>
 
-                {/* Active / Archived toggle + Filtered Search */}
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-3">
                     {/* Active / Archived toggle */}
                     <div className="flex items-center rounded-lg border border-card-border bg-card">
-                        {(["active", "archived"] as const).map((d) => (
+                        {(["active", "archived"] as const).map((tab) => (
                             <button
-                                key={d}
+                                key={tab}
                                 onClick={() => {
-                                    setView(d);
+                                    setView(tab);
                                     setPage(1);
                                 }}
                                 className={`flex items-center px-3.5 py-1.5 text-sm font-semibold rounded-md transition capitalize
                                     ${
-                                        view === d
+                                        view === tab
                                             ? "bg-primary text-primary-foreground"
                                             : "text-muted-foreground hover:bg-secondary dark:hover:text-primary"
                                     }`}
                             >
-                                {d}
+                                {tab}
                             </button>
                         ))}
                     </div>
+
+                    {/* Time Period Selector */}
+                    <DateRangePicker
+                        startDate={range.start}
+                        endDate={range.end}
+                        preset={range.preset}
+                        onChange={(newRange) => {
+                            setRange(newRange);
+                            setPage(1);
+                        }}
+                    />
 
                     {/* Filtered Search */}
                     <div className="relative">
@@ -152,7 +275,7 @@ export default function DriverTable({
                         />
                         <input
                             type="text"
-                            placeholder="Search by vehicle..."
+                            placeholder="Search by driver..."
                             value={search}
                             onChange={(e) => {
                                 setSearch(e.target.value);
@@ -165,41 +288,66 @@ export default function DriverTable({
                 </div>
             </div>
 
-            {/* Filter Options */}
-            {/* <div className="-mt-4 mb-3 flex flex-wrap gap-2">
+            {/* Filter Options + Clear Filters Button */}
+            <div className="mb-4 flex flex-wrap items-center gap-2">
                 <FilterSelect
-                    label="All Routes"
-                    value={routeFilter}
-                    options={routeOptions}
-                    onChange={setRouteFilter}
+                    label="All Distance Traveled"
+                    value={distanceFilter}
+                    options={DISTANCE_OPTIONS}
+                    onChange={(v) => {
+                        setDistanceFilter(v);
+                        setPage(1);
+                    }}
                 />
                 <FilterSelect
-                    label="All Drivers"
-                    value={driverFilter}
-                    options={driverOptions}
-                    onChange={setDriverFilter}
+                    label="All Fuel Consumed"
+                    value={fuelFilter}
+                    options={FUEL_OPTIONS}
+                    onChange={(v) => {
+                        setFuelFilter(v);
+                        setPage(1);
+                    }}
                 />
                 <FilterSelect
-                    label="All Scheduled Dates"
-                    value={scheduledFilter}
-                    options={scheduledOptions}
-                    onChange={setScheduledFilter}
+                    label="All Active Hours"
+                    value={hoursFilter}
+                    options={HOURS_OPTIONS}
+                    onChange={(v) => {
+                        setHoursFilter(v);
+                        setPage(1);
+                    }}
                 />
                 <FilterSelect
                     label="All Statuses"
                     value={statusFilter}
                     options={statusOptions}
-                    onChange={setStatusFilter}
+                    onChange={(v) => {
+                        setStatusFilter(v);
+                        setPage(1);
+                    }}
                 />
-            </div> */}
 
-            {/* Route Assignment Table View */}
+                {hasActiveFilters && (
+                    <button
+                        type="button"
+                        onClick={handleClearFilters}
+                        className="flex items-center gap-1.5 rounded-lg border border-border px-3 py-1.5 text-xs font-semibold text-muted-foreground transition hover:bg-secondary hover:text-red-500 dark:hover:text-red-400 cursor-pointer"
+                        title="Clear all filters"
+                        aria-label="Clear all filters"
+                    >
+                        <X size={14} className="shrink-0" />
+                        <span>Clear filters</span>
+                    </button>
+                )}
+            </div>
+
+            {/* Drivers Table View */}
             <div className="overflow-auto max-h-128 rounded-lg border border-card-border scrollbar-thumb-muted-foreground">
                 <table className="w-full text-left text-sm border-separate border-spacing-0 whitespace-nowrap">
-                    <thead className="sticky top-0 z-10 bg-gray-50 dark:bg-slate-900 ">
+                    <thead className="sticky top-0 z-10 bg-gray-50 dark:bg-slate-900">
                         <tr>
                             <SortableHeader
-                                sortKey="vehicle_plate"
+                                sortKey="driver_name"
                                 sortState={sortState}
                                 onToggle={toggleSort}
                                 className="rounded-tl-lg"
@@ -211,7 +359,7 @@ export default function DriverTable({
                                 Drivers
                             </SortableHeader>
                             <SortableHeader
-                                sortKey="vehicle_type"
+                                sortKey="active_hours"
                                 sortState={sortState}
                                 onToggle={toggleSort}
                             >
@@ -222,7 +370,7 @@ export default function DriverTable({
                                 Active Hours
                             </SortableHeader>
                             <SortableHeader
-                                sortKey="last_driver"
+                                sortKey="fuel_consumed"
                                 sortState={sortState}
                                 onToggle={toggleSort}
                             >
@@ -233,7 +381,7 @@ export default function DriverTable({
                                 Fuel Consumed
                             </SortableHeader>
                             <SortableHeader
-                                sortKey="weight_capacity"
+                                sortKey="distance_traveled"
                                 sortState={sortState}
                                 onToggle={toggleSort}
                             >
@@ -244,7 +392,7 @@ export default function DriverTable({
                                 Distance Travelled
                             </SortableHeader>
                             <SortableHeader
-                                sortKey="target"
+                                sortKey="most_driven"
                                 sortState={sortState}
                                 onToggle={toggleSort}
                             >
@@ -255,7 +403,7 @@ export default function DriverTable({
                                 Freq Vehicle Type
                             </SortableHeader>
                             <SortableHeader
-                                sortKey="avg_performance"
+                                sortKey="top3_vehicles"
                                 sortState={sortState}
                                 onToggle={toggleSort}
                             >
@@ -313,16 +461,6 @@ export default function DriverTable({
                                 <td className="px-4 py-3.5 text-[13px] align-middle font-semibold border-b border-card-border">
                                     {d.distanceTraveled} km
                                 </td>
-                                {/* <td className="px-4 py-3.5 text-[13px] align-middle border-b border-card-border">
-                                    {d.lastDriver == "" ? (
-                                        <div className="italic text-muted-foreground border-b border-card-border">
-                                            No assigned driver
-                                        </div>
-                                    ) : (
-                                        d.lastDriver
-                                    )}
-                                </td> */}
-
                                 <td className="px-4 py-3.5 text-[13px] align-middle border-b border-card-border">
                                     {d.mostDrivenVehicleType ?? "—"}
                                 </td>
@@ -355,7 +493,6 @@ export default function DriverTable({
                                     {activeMenu === d.id_ && anchor && (
                                         <TableActionsMenu
                                             ref={menuRef}
-                                            // Menu renders in a viewport-fixed portal so it pops out of the scroll container
                                             anchor={anchor}
                                             actions={[
                                                 {
@@ -423,7 +560,7 @@ export default function DriverTable({
                 </table>
             </div>
 
-            {/* Pagination */}
+            {/* Pagination Controls */}
             <div className="flex items-center justify-between mt-4 text-xs text-muted-foreground">
                 <div className="flex items-center gap-2">
                     <span>Rows per page</span>
