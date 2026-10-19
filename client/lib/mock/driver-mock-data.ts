@@ -10,9 +10,14 @@ export interface MockDriver {
     mostDrivenVehicleType: string;
     topThreeVehicles: string;
 
+    date?: string;
     archived?: boolean;
     archivedAt?: string;
     lastModified?: string;
+}
+
+function getToday(): string {
+    return new Date().toISOString().split("T")[0];
 }
 
 export const mockDriverData: MockDriver[] = [
@@ -28,6 +33,7 @@ export const mockDriverData: MockDriver[] = [
         mostDrivenVehicleType: "Van",
         topThreeVehicles: "ABC, CDE, FGH",
 
+        date: getToday(),
         lastModified: "Today",
     },
     {
@@ -42,6 +48,7 @@ export const mockDriverData: MockDriver[] = [
         mostDrivenVehicleType: "Car",
         topThreeVehicles: "DAC, BAC, HAC",
 
+        date: getToday(),
         lastModified: "Yesterday",
     },
 ];
