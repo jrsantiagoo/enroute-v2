@@ -3,8 +3,8 @@ import * as driverService from "../services/driver-services.js";
 export async function getDrivers(req, res) {
     try {
         // Mirrors the vehicle list so archived drivers are only returned on request.
-        const includeArchived = String(req.query.archived) === "true";
-        const drivers = await driverService.getDrivers(includeArchived);
+        // const includeArchived = String(req.query.archived) === "true";
+        const drivers = await driverService.getDrivers(/*includeArchived*/);
         res.json({
             success: true,
             data: drivers,
@@ -29,7 +29,8 @@ export async function getDriverCapacity(req, res) {
 }
 
 const MAX_TEXT_LENGTH = 100;
-const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const UUID_PATTERN =
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const OPTIONAL_TEXT_FIELDS = ["contact_number", "license_number"];
 
 // Services throw errors with a statusCode; anything else is an unexpected failure.
@@ -51,7 +52,12 @@ function validateDriverId(id) {
 function validateDriverInput(data, isUpdate = false) {
     const body = data ?? {};
 
-    if (isUpdate && !["driver_id", ...OPTIONAL_TEXT_FIELDS].some((field) => body[field] !== undefined)) {
+    if (
+        isUpdate &&
+        !["driver_id", ...OPTIONAL_TEXT_FIELDS].some(
+            (field) => body[field] !== undefined,
+        )
+    ) {
         return "No fields provided for update";
     }
 
@@ -63,7 +69,11 @@ function validateDriverInput(data, isUpdate = false) {
     }
 
     for (const field of OPTIONAL_TEXT_FIELDS) {
-        if (body[field] !== undefined && body[field] !== null && !isValidText(body[field])) {
+        if (
+            body[field] !== undefined &&
+            body[field] !== null &&
+            !isValidText(body[field])
+        ) {
             return `${field} must be a string of at most ${MAX_TEXT_LENGTH} characters`;
         }
     }
@@ -97,10 +107,15 @@ export async function createDriver(req, res) {
 
 export async function updateDriver(req, res) {
     try {
-        const inputError = validateDriverId(req.params.id) ?? validateDriverInput(req.body, true);
+        const inputError =
+            validateDriverId(req.params.id) ??
+            validateDriverInput(req.body, true);
         if (inputError) return res.status(400).json({ message: inputError });
 
-        const driver = await driverService.updateDriver(req.params.id, req.body);
+        const driver = await driverService.updateDriver(
+            req.params.id,
+            req.body,
+        );
         res.json({ success: true, data: driver });
     } catch (error) {
         sendDriverError(res, error);
@@ -123,6 +138,10 @@ function archiveHandler(serviceCall) {
 }
 
 // Soft delete: DELETE archives the driver instead of removing the row.
-export const deleteDriver = archiveHandler((id) => driverService.archiveDriver(id));
+export const deleteDriver = archiveHandler((id) =>
+    driverService.archiveDriver(id),
+);
 
-export const unarchiveDriver = archiveHandler((id) => driverService.unarchiveDriver(id));
+export const unarchiveDriver = archiveHandler((id) =>
+    driverService.unarchiveDriver(id),
+);
