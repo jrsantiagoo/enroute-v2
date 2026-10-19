@@ -65,6 +65,7 @@ model agent_profile {
   //tenant_id_   String  @db.Uuid
 
   created_at     DateTime @default(now()) @db.Timestamptz(6)
+  archived_at    DateTime? @db.Timestamptz(6)
 
   // Relations
   vehicles            vehicle[]
