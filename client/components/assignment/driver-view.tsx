@@ -16,10 +16,6 @@ import SortableHeader from "@/components/ui/sortable-header";
 import { DriverCapacity } from "@/lib/types/schema";
 import StatusBadge from "../ui/status-badge";
 import FilterSelect from "../ui/filter-select";
-import DateRangePicker, {
-    type Preset,
-    type DateRange,
-} from "@/components/dashboard/date-range-picker";
 
 const ROWS_PER_PAGE_OPTIONS = [5, 10, 20];
 
@@ -29,33 +25,9 @@ const HOURS_OPTIONS = ["< 4 hrs", "4 - 8 hrs", "> 8 hrs"];
 
 interface DriverViewProps {
     items: DriverCapacity[];
-    onDateRangeChange?: (range: DateRange & { preset: Preset }) => void;
 }
 
-export default function DriverView({
-    items,
-    onDateRangeChange,
-}: DriverViewProps) {
-    const [range, setRange] = useState<{
-        start: string;
-        end: string;
-        preset: Preset;
-    }>(() => {
-        const now = new Date();
-        const today = now.toISOString().slice(0, 10);
-        const dayOfWeek = now.getDay();
-        const diff = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
-        const monday = new Date(
-            now.getFullYear(),
-            now.getMonth(),
-            now.getDate() - diff,
-        );
-        const firstOfWeek = `${monday.getFullYear()}-${String(
-            monday.getMonth() + 1,
-        ).padStart(2, "0")}-${String(monday.getDate()).padStart(2, "0")}`;
-        return { start: firstOfWeek, end: today, preset: "thisWeek" };
-    });
-
+export default function DriverView({ items }: DriverViewProps) {
     const [search, setSearch] = useState("");
     const [page, setPage] = useState(1);
     const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -91,23 +63,11 @@ export default function DriverView({
             : ["ACTIVE", "INACTIVE", "FULLY UTILIZED"];
     }, [items]);
 
-    const handleRangeChange = (newRange: DateRange & { preset: Preset }) => {
-        setRange(newRange);
-        setPage(1);
-        onDateRangeChange?.(newRange);
-    };
-
     const filtered = useMemo(() => {
         return items.filter((d) => {
             const q = search.toLowerCase();
             const matchesSearch =
                 !search || d.driverId.toLowerCase().includes(q);
-
-            let matchesDate = true;
-            if (range.preset !== "allTime" && d.date) {
-                const itemDate = d.date.split("T")[0];
-                matchesDate = itemDate >= range.start && itemDate <= range.end;
-            }
 
             let matchesDistance = true;
             if (distanceFilter === "< 50 km") {
@@ -143,22 +103,13 @@ export default function DriverView({
 
             return (
                 matchesSearch &&
-                matchesDate &&
                 matchesDistance &&
                 matchesFuel &&
                 matchesHours &&
                 matchesStatus
             );
         });
-    }, [
-        items,
-        search,
-        range,
-        distanceFilter,
-        fuelFilter,
-        hoursFilter,
-        statusFilter,
-    ]);
+    }, [items, search, distanceFilter, fuelFilter, hoursFilter, statusFilter]);
 
     const getItemVal = useCallback((d: DriverCapacity, key: string) => {
         switch (key) {
@@ -193,7 +144,7 @@ export default function DriverView({
 
     return (
         <div className="rounded-xl bg-card p-6 shadow-lg shadow-primary border border-card-border">
-            {/* Header + Time Period Selector + Search */}
+            {/* Header + Search */}
             <div className="mb-4 flex flex-wrap items-center justify-between gap-4">
                 <div className="flex items-center gap-2 text-lg font-bold">
                     <User size={21} className="text-primary-foreground" />
@@ -202,31 +153,22 @@ export default function DriverView({
                     </h3>
                 </div>
 
-                <div className="flex items-center gap-3">
-                    <DateRangePicker
-                        startDate={range.start}
-                        endDate={range.end}
-                        preset={range.preset}
-                        onChange={handleRangeChange}
+                <div className="relative">
+                    <Search
+                        size={14}
+                        className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
                     />
-
-                    <div className="relative">
-                        <Search
-                            size={14}
-                            className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
-                        />
-                        <input
-                            type="text"
-                            placeholder="Search drivers..."
-                            value={search}
-                            onChange={(e) => {
-                                setSearch(e.target.value);
-                                setPage(1);
-                            }}
-                            className="w-64 rounded-lg border border-card-border pl-8 pr-4 py-1.5 text-sm text-foreground outline-none transition 
-                                focus:border-primary-foreground dark:bg-card placeholder:text-muted-foreground"
-                        />
-                    </div>
+                    <input
+                        type="text"
+                        placeholder="Search drivers..."
+                        value={search}
+                        onChange={(e) => {
+                            setSearch(e.target.value);
+                            setPage(1);
+                        }}
+                        className="w-64 rounded-lg border border-card-border pl-8 pr-4 py-1.5 text-sm text-foreground outline-none transition 
+                            focus:border-primary-foreground dark:bg-card placeholder:text-muted-foreground"
+                    />
                 </div>
             </div>
 
@@ -269,7 +211,7 @@ export default function DriverView({
                     }}
                 />
 
-                {/* Clear Active Filters Button: only renders when at least one filter != 'All' */}
+                {/* Clear Active Filters Button */}
                 {hasActiveFilters && (
                     <button
                         type="button"
@@ -287,7 +229,7 @@ export default function DriverView({
             {/* Table */}
             <div className="overflow-auto max-h-128 rounded-lg border border-card-border scrollbar-thumb-muted-foreground">
                 <table className="w-full text-left text-sm border-separate border-spacing-0 whitespace-nowrap">
-                    <thead className="sticky top-0 z-10 bg-gray-50 dark:bg-slate-900 ">
+                    <thead className="sticky top-0 z-10 bg-gray-50 dark:bg-slate-900">
                         <tr>
                             <SortableHeader
                                 sortKey="driverName"
