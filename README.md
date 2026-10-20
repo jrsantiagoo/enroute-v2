@@ -20,7 +20,7 @@ Welcome to the **EnRoute**, a web application that helps logistics managers effi
 
 ### Prerequisites
 
-- Node.js
+- Node.js 24
 - npm
 - PostgreSQL database (with `DATABASE_URL` / `DIRECT_URL`)
 - Supabase Project (for auth)
@@ -166,13 +166,15 @@ The `deploy` job does two things:
 
 Vercel promotes the production frontend only after `server`, `client` and `deploy` pass.
 
+Node.js 24 is pinned in `engines.node` of every `package.json` (root, `server/`, `client/`). Keep them in sync. CI, Render and Vercel all read it.
+
 > Schema changes always need a migration (`npx prisma migrate dev --name <change>`). The drift check fails the build when `schema.prisma` and `prisma/migrations` disagree.
 
 ### One-time setup (in this order)
 
 1. **Render:** in the backend service's settings:
    - Confirm the branch is `main`.
-   - Confirm `NODE_VERSION` is at least 22.18. The server imports the generated `.ts` Prisma client directly.
+   - Delete the `NODE_VERSION` environment variable if it is set, choosing **Save only**, but only once `main` includes the `engines.node` pins. `NODE_VERSION` overrides `engines.node`. Without it, Render runs the Node 24 that CI tests on. The server imports the generated `.ts` Prisma client directly, so it needs Node 22.18 or later. The next deploy's build log should report Node 24.
    - Set **Auto-Deploy** to **Off**.
    - Copy the **Deploy Hook** URL.
 2. **GitHub (repo owner):** in Settings → Environments, create `production`:
