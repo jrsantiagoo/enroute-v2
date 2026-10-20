@@ -22,7 +22,7 @@ assignees: ""
 
 <!-- List the specific files, endpoints, components, or modules that will be modified/created. -->
 
-- `path\to\file`
+- `path\to\file`: [Task to be done in this file]
 
 ### Technical Details / Requirements
 
