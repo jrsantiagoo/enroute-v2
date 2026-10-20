@@ -213,9 +213,10 @@ jobs:
         timeout-minutes: 25 # a hang fails the step (not the job), so the diagnostics below still run
       - if: failure()
         run: cat "$RUNNER_TEMP/server.log" "$RUNNER_TEMP/client.log"
-      - if: failure()
+      - if: ${{ !cancelled() }} # also keeps reports of tests that only passed on retry (flaky)
         uses: actions/upload-artifact@v7
         with:
           name: playwright-report-${{ matrix.name }}
           path: playwright-report/
+          if-no-files-found: ignore # the run failed before Playwright started
           retention-days: 7
