@@ -177,6 +177,14 @@ Check the deploy in Render's dashboard. If the cause is on Render's side (settin
 
 Node.js 24 is pinned in `engines.node` of every `package.json` (root, `server/`, `client/`). Keep them in sync. CI, Render and Vercel all read it.
 
+Dependabot (`.github/dependabot.yml`) opens weekly version-update PRs against `dev`:
+- Prisma packages together, majors included
+- other npm minor and patch updates in one PR per directory
+- each other npm major update separately
+- GitHub Actions in one PR
+
+It reads its config from `main`, so it starts once this file reaches `main`. Security-update PRs, if enabled under Settings → Advanced Security, ignore this config and target `main`.
+
 > Schema changes always need a migration (`npx prisma migrate dev --name <change>`). The drift check fails the build when `schema.prisma` and `prisma/migrations` disagree.
 
 ### One-time setup (in this order)
