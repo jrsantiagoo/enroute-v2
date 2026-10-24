@@ -2,6 +2,9 @@
     "name": "cssweng-project",
     "version": "1.0.0",
     "description": "",
+    "engines": {
+        "node": "24.x"
+    },
     "scripts": {
         "install-server": "cd server && npm install",
         "install-client": "cd client && npm install",

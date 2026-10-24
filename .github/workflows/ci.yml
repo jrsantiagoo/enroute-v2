@@ -33,7 +33,7 @@ jobs:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v7
         with:
-          node-version: 24
+          node-version-file: server/package.json # every package.json pins the same engines.node
           cache: npm
           cache-dependency-path: server/package-lock.json
       - run: npm ci
@@ -51,21 +51,55 @@ jobs:
           node src/server.js &
           curl -fsS --retry 30 --retry-delay 1 --retry-connrefused http://localhost:8080/health
 
-  # CD (main only): migrate prod, then release exactly this commit on Render.
+  # CD (main only): migrate prod, release exactly this commit on Render, then wait
+  # until Render serves it, so a green `deploy` (Vercel's promotion gate) means the backend is live.
   deploy:
     needs: [server, client]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-24.04
-    timeout-minutes: 15
-    environment: production # holds the secrets below; restrict it to main (README CI/CD)
+    timeout-minutes: 30
+    environment: production # holds the secrets and variable below; restrict it to main (README CI/CD)
     defaults:
       run:
         working-directory: server
+        shell: bash # adds pipefail; the implicit default is only `bash -e`
+    env:
+      PRODUCTION_API_URL: ${{ vars.PRODUCTION_API_URL }}
     steps:
       - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0 # full history for the rollback check
+      - name: Check production config # fail before anything touches production
+        env:
+          DIRECT_URL: ${{ secrets.DIRECT_URL }}
+          RENDER_DEPLOY_HOOK_URL: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+        run: |
+          missing=0
+          for name in DIRECT_URL RENDER_DEPLOY_HOOK_URL PRODUCTION_API_URL; do
+            [ -n "${!name}" ] || { echo "::error::$name is not set in the production environment - see README CI/CD"; missing=1; }
+          done
+          exit $missing
+      - name: Refuse to roll production back # e.g. re-running an old main run after a newer deploy
+        run: |
+          code=0
+          status=$(curl -sSL --max-time 90 -o "$RUNNER_TEMP/health.json" -w '%{http_code}' "${PRODUCTION_API_URL%/}/health") || code=$?
+          # A wrong URL fails here, before migrating; a down or sleeping backend (timeout, 5xx) stays deployable.
+          if [ "$code" = 3 ] || [ "$code" = 6 ] || [ "$status" = 404 ]; then
+            echo "::error::$PRODUCTION_API_URL/health does not reach the backend (curl exit $code, HTTP $status) - check PRODUCTION_API_URL"
+            exit 1
+          fi
+          live=$(jq -r '.commit // empty' "$RUNNER_TEMP/health.json" 2>/dev/null) || live=
+          if [ "$status" != 200 ] || [ -z "$live" ]; then
+            echo "::notice::Production commit unknown (curl exit $code, HTTP $status) - skipping the rollback check"
+            exit 0
+          fi
+          git merge-base --is-ancestor "$live" "$GITHUB_SHA" || {
+            echo "::error::Production serves $live, which $GITHUB_SHA does not contain - refusing to roll back"
+            exit 1
+          }
       - uses: actions/setup-node@v7
         with:
-          node-version: 24
+          node-version-file: server/package.json # every package.json pins the same engines.node
           cache: npm
           cache-dependency-path: server/package-lock.json
       - run: npm ci
@@ -76,15 +110,21 @@ jobs:
         env: # Supabase session-pooler URL (IPv4)
           DATABASE_URL: ${{ secrets.DIRECT_URL }}
           DIRECT_URL: ${{ secrets.DIRECT_URL }}
-        run: |
-          : "${DIRECT_URL:?Secret DIRECT_URL is not set in the production environment - see README CI/CD}"
-          npx prisma migrate deploy
+        run: npx prisma migrate deploy
       - name: Deploy backend to Render
         env:
           RENDER_DEPLOY_HOOK_URL: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+        run: curl -fsS -X POST "$RENDER_DEPLOY_HOOK_URL&ref=$GITHUB_SHA"
+      - name: Wait until Render serves this commit
+        timeout-minutes: 15 # Render builds from source; a failed build or start never reports this commit
         run: |
-          : "${RENDER_DEPLOY_HOOK_URL:?Secret RENDER_DEPLOY_HOOK_URL is not set in the production environment - see README CI/CD}"
-          curl -fsS -X POST "$RENDER_DEPLOY_HOOK_URL&ref=$GITHUB_SHA"
+          health="${PRODUCTION_API_URL%/}/health"
+          while true; do
+            live=$(curl -fsSL --max-time 30 "$health" | jq -r .commit) || live=unreachable
+            [ "$live" = "$GITHUB_SHA" ] && break
+            echo "Render serves $live, waiting for $GITHUB_SHA"
+            sleep 15
+          done
 
   client:
     runs-on: ubuntu-24.04
@@ -96,7 +136,7 @@ jobs:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v7
         with:
-          node-version: 24
+          node-version-file: client/package.json # engines.node, which Vercel reads too
           cache: npm
           cache-dependency-path: client/package-lock.json
       - run: npm ci
@@ -127,7 +167,7 @@ jobs:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v7
         with:
-          node-version: 24
+          node-version-file: server/package.json # every package.json pins the same engines.node
           cache: npm
           cache-dependency-path: |
             package-lock.json
@@ -173,9 +213,10 @@ jobs:
         timeout-minutes: 25 # a hang fails the step (not the job), so the diagnostics below still run
       - if: failure()
         run: cat "$RUNNER_TEMP/server.log" "$RUNNER_TEMP/client.log"
-      - if: failure()
+      - if: ${{ !cancelled() }} # also keeps reports of tests that only passed on retry (flaky)
         uses: actions/upload-artifact@v7
         with:
           name: playwright-report-${{ matrix.name }}
           path: playwright-report/
+          if-no-files-found: ignore # the run failed before Playwright started
           retention-days: 7

@@ -1,5 +1,5 @@
 // /api/trips through the real Express app, Prisma mocked
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import request from "supertest";
 
 vi.mock("../../src/lib/prisma.js", () => ({
@@ -37,11 +37,25 @@ beforeEach(() => {
 });
 
 describe("GET /health", () => {
-    it("responds ok", async () => {
+    afterEach(() => {
+        vi.unstubAllEnvs();
+    });
+
+    it("responds ok with no commit outside Render", async () => {
+        vi.stubEnv("RENDER_GIT_COMMIT", undefined);
+
         const res = await request(app).get("/health");
 
         expect(res.status).toBe(200);
-        expect(res.body).toEqual({ status: "ok" });
+        expect(res.body).toEqual({ status: "ok", commit: null });
+    });
+
+    it("reports the commit Render is serving", async () => {
+        vi.stubEnv("RENDER_GIT_COMMIT", "abc123");
+
+        const res = await request(app).get("/health");
+
+        expect(res.body).toEqual({ status: "ok", commit: "abc123" });
     });
 });
 

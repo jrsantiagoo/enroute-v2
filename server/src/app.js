@@ -22,8 +22,11 @@ app.use(
     }),
 );
 
-// Unauthenticated liveness probe (CI readiness checks).
-app.get("/health", (req, res) => res.json({ status: "ok" }));
+// Unauthenticated liveness probe (CI readiness checks). `commit` lets the deploy
+// job confirm Render is serving the new build; Render sets RENDER_GIT_COMMIT.
+app.get("/health", (req, res) =>
+    res.json({ status: "ok", commit: process.env.RENDER_GIT_COMMIT ?? null }),
+);
 app.use("/api/managers", managerRoutes);
 app.use("/api/routes", routeRoutes);
 app.use("/api/auth", authRoutes);
