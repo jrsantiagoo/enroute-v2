@@ -6,7 +6,8 @@ import {
     ArchiveIcon,
     Eye,
     User,
-    Van,
+    Phone,
+    CreditCard,
     Ellipsis,
     PenLine,
     RotateCcw,
@@ -17,14 +18,10 @@ import {
     Route,
     X,
 } from "lucide-react";
-import type { MockDriver } from "@/lib/mock/driver-mock-data";
+import type { Driver, DriverStatus } from "@/lib/api/drivers";
 import { useSort } from "@/lib/hooks/useSort";
 import SortableHeader from "@/components/ui/sortable-header";
 import FilterSelect from "../ui/filter-select";
-import DateRangePicker, {
-    type Preset,
-    type DateRange,
-} from "@/components/dashboard/date-range-picker";
 import { useTableActionsMenu } from "@/lib/hooks/useTableActionsMenu";
 import { TableActionsMenu } from "@/components/ui/table-actions-menu";
 import StatusBadge from "@/components/ui/status-badge";
@@ -34,13 +31,14 @@ const ROWS_PER_PAGE_OPTIONS = [5, 10, 20];
 const DISTANCE_OPTIONS = ["< 50 km", "50 - 100 km", "> 100 km"];
 const FUEL_OPTIONS = ["< 5 L", "5 - 15 L", "> 15 L"];
 const HOURS_OPTIONS = ["< 4 hrs", "4 - 8 hrs", "> 8 hrs"];
+const STATUS_OPTIONS: DriverStatus[] = ["ACTIVE", "INACTIVE", "FULLY UTILIZED"];
 
 interface DriverProps {
-    drivers: MockDriver[];
-    onView?: (driver: MockDriver) => void;
-    onEdit?: (driver: MockDriver) => void;
-    onArchive?: (driver: MockDriver) => void;
-    onUnarchive?: (driver: MockDriver) => void;
+    drivers: Driver[];
+    onView?: (driver: Driver) => void;
+    onEdit?: (driver: Driver) => void;
+    onArchive?: (driver: Driver) => void;
+    onUnarchive?: (driver: Driver) => void;
 }
 
 export default function DriverTable({
@@ -56,27 +54,6 @@ export default function DriverTable({
         useTableActionsMenu();
     const [page, setPage] = useState(1);
     const [rowsPerPage, setRowsPerPage] = useState(10);
-
-    // Date Range state
-    const [range, setRange] = useState<{
-        start: string;
-        end: string;
-        preset: Preset;
-    }>(() => {
-        const now = new Date();
-        const today = now.toISOString().slice(0, 10);
-        const dayOfWeek = now.getDay();
-        const diff = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
-        const monday = new Date(
-            now.getFullYear(),
-            now.getMonth(),
-            now.getDate() - diff,
-        );
-        const firstOfWeek = `${monday.getFullYear()}-${String(
-            monday.getMonth() + 1,
-        ).padStart(2, "0")}-${String(monday.getDate()).padStart(2, "0")}`;
-        return { start: firstOfWeek, end: today, preset: "thisWeek" };
-    });
 
     // Filter states
     const [distanceFilter, setDistanceFilter] = useState("All");
@@ -98,34 +75,17 @@ export default function DriverTable({
         setPage(1);
     };
 
-    const isArchived = (d: MockDriver) => Boolean(d.archived || d.archivedAt);
-
-    const statusOptions = useMemo(() => {
-        const statuses = Array.from(
-            new Set(drivers.map((d) => d.status).filter(Boolean)),
-        );
-        return statuses.length > 0 ? statuses : ["ACTIVE", "INACTIVE"];
-    }, [drivers]);
-
-    // Combined filtering: tab view, date range, search query, and numeric/status filters
+    // Combined filtering: tab view, search query, and numeric/status filters
     const filtered = useMemo(() => {
         return drivers
-            .filter((d) =>
-                view === "archived" ? isArchived(d) : !isArchived(d),
-            )
+            .filter((d) => (view === "archived" ? d.archived : !d.archived))
             .filter((d) => {
                 const q = search.toLowerCase();
                 const matchesSearch =
                     !search ||
-                    d.driverName?.toLowerCase().includes(q) ||
-                    d.driverId?.toLowerCase().includes(q);
-
-                let matchesDate = true;
-                if (range.preset !== "allTime" && d.date) {
-                    const itemDate = d.date.split("T")[0];
-                    matchesDate =
-                        itemDate >= range.start && itemDate <= range.end;
-                }
+                    d.driverId.toLowerCase().includes(q) ||
+                    d.contactNumber.toLowerCase().includes(q) ||
+                    d.licenseNumber.toLowerCase().includes(q);
 
                 let matchesDistance = true;
                 if (distanceFilter === "< 50 km") {
@@ -161,7 +121,6 @@ export default function DriverTable({
 
                 return (
                     matchesSearch &&
-                    matchesDate &&
                     matchesDistance &&
                     matchesFuel &&
                     matchesHours &&
@@ -172,7 +131,6 @@ export default function DriverTable({
         drivers,
         view,
         search,
-        range,
         distanceFilter,
         fuelFilter,
         hoursFilter,
@@ -181,24 +139,24 @@ export default function DriverTable({
 
     // Sorting column accessor
     const getDriverVal = useCallback(
-        (d: MockDriver, key: string) => {
+        (d: Driver, key: string) => {
             switch (key) {
-                case "driver_name":
-                    return d.driverName;
+                case "driver_id":
+                    return d.driverId;
+                case "contact_number":
+                    return d.contactNumber;
+                case "license_number":
+                    return d.licenseNumber;
                 case "active_hours":
                     return d.activeHours.toString().padStart(5, "0");
                 case "fuel_consumed":
                     return d.fuelConsumed.toString().padStart(5, "0");
                 case "distance_traveled":
                     return d.distanceTraveled.toString().padStart(5, "0");
-                case "most_driven":
-                    return d.mostDrivenVehicleType;
-                case "top3_vehicles":
-                    return d.topThreeVehicles;
                 case "archivedAt":
                     return view === "archived"
                         ? (d.archivedAt ?? "")
-                        : (d.lastModified ?? "");
+                        : d.createdAt;
                 case "status":
                     return d.status;
                 default:
@@ -227,7 +185,7 @@ export default function DriverTable({
 
     return (
         <div className="rounded-xl bg-card p-6 shadow-lg shadow-primary border border-card-border">
-            {/* Header + View Toggle + DateRangePicker + Search */}
+            {/* Header + View Toggle + Search */}
             <div className="mb-4 flex flex-wrap items-center justify-between gap-4">
                 <div className="flex items-center gap-2 text-base font-semibold">
                     <User size={21} className="text-primary-foreground" />
@@ -255,17 +213,6 @@ export default function DriverTable({
                             </button>
                         ))}
                     </div>
-
-                    {/* Time Period Selector */}
-                    <DateRangePicker
-                        startDate={range.start}
-                        endDate={range.end}
-                        preset={range.preset}
-                        onChange={(newRange) => {
-                            setRange(newRange);
-                            setPage(1);
-                        }}
-                    />
 
                     {/* Filtered Search */}
                     <div className="relative">
@@ -320,7 +267,7 @@ export default function DriverTable({
                 <FilterSelect
                     label="All Statuses"
                     value={statusFilter}
-                    options={statusOptions}
+                    options={STATUS_OPTIONS}
                     onChange={(v) => {
                         setStatusFilter(v);
                         setPage(1);
@@ -347,7 +294,7 @@ export default function DriverTable({
                     <thead className="sticky top-0 z-10 bg-gray-50 dark:bg-slate-900">
                         <tr>
                             <SortableHeader
-                                sortKey="driver_name"
+                                sortKey="driver_id"
                                 sortState={sortState}
                                 onToggle={toggleSort}
                                 className="rounded-tl-lg"
@@ -356,7 +303,29 @@ export default function DriverTable({
                                     size={14}
                                     className="inline mr-0.5 -mt-0.5"
                                 />
-                                Drivers
+                                Driver ID
+                            </SortableHeader>
+                            <SortableHeader
+                                sortKey="contact_number"
+                                sortState={sortState}
+                                onToggle={toggleSort}
+                            >
+                                <Phone
+                                    size={14}
+                                    className="inline mr-0.5 -mt-0.5"
+                                />
+                                Contact Number
+                            </SortableHeader>
+                            <SortableHeader
+                                sortKey="license_number"
+                                sortState={sortState}
+                                onToggle={toggleSort}
+                            >
+                                <CreditCard
+                                    size={14}
+                                    className="inline mr-0.5 -mt-0.5"
+                                />
+                                License Number
                             </SortableHeader>
                             <SortableHeader
                                 sortKey="active_hours"
@@ -392,28 +361,6 @@ export default function DriverTable({
                                 Distance Travelled
                             </SortableHeader>
                             <SortableHeader
-                                sortKey="most_driven"
-                                sortState={sortState}
-                                onToggle={toggleSort}
-                            >
-                                <Van
-                                    size={14}
-                                    className="inline mr-0.5 -mt-0.5"
-                                />
-                                Freq Vehicle Type
-                            </SortableHeader>
-                            <SortableHeader
-                                sortKey="top3_vehicles"
-                                sortState={sortState}
-                                onToggle={toggleSort}
-                            >
-                                <Van
-                                    size={14}
-                                    className="inline mr-0.5 -mt-0.5"
-                                />
-                                Top 3 Vehicles
-                            </SortableHeader>
-                            <SortableHeader
                                 sortKey="archivedAt"
                                 sortState={sortState}
                                 onToggle={toggleSort}
@@ -424,7 +371,7 @@ export default function DriverTable({
                                 />
                                 {view === "archived"
                                     ? "Archived At"
-                                    : "Last Modified"}
+                                    : "Created At"}
                             </SortableHeader>
                             <SortableHeader
                                 sortKey="status"
@@ -444,13 +391,14 @@ export default function DriverTable({
                                 key={d.id_}
                                 className="border-b border-card-border text-foreground hover:bg-muted-foreground/15 transition"
                             >
-                                <td className="px-4 py-3.5 text-[13px] align-middle font-medium max-w-40 truncate border-b border-card-border">
-                                    <div className="font-semibold">
-                                        {d.driverName}
-                                    </div>
-                                    <div className="text-xs text-muted-foreground">
-                                        {d.driverId}
-                                    </div>
+                                <td className="px-4 py-3.5 text-[13px] align-middle font-semibold max-w-40 truncate border-b border-card-border">
+                                    {d.driverId}
+                                </td>
+                                <td className="px-4 py-3.5 text-[13px] align-middle border-b border-card-border">
+                                    {d.contactNumber || "—"}
+                                </td>
+                                <td className="px-4 py-3.5 text-[13px] align-middle border-b border-card-border">
+                                    {d.licenseNumber || "—"}
                                 </td>
                                 <td className="px-4 py-3.5 text-[13px] align-middle font-medium border-b border-card-border">
                                     {d.activeHours} hrs
@@ -462,19 +410,11 @@ export default function DriverTable({
                                     {d.distanceTraveled} km
                                 </td>
                                 <td className="px-4 py-3.5 text-[13px] align-middle border-b border-card-border">
-                                    {d.mostDrivenVehicleType ?? "—"}
-                                </td>
-                                <td className="px-4 py-3.5 text-[13px] align-middle border-b border-card-border">
-                                    {d.topThreeVehicles ?? "—"}
-                                </td>
-                                <td className="px-4 py-3.5 text-[13px] align-middle border-b border-card-border">
-                                    {view === "archived"
-                                        ? d.archivedAt
-                                            ? formatDateTime(d.archivedAt)
-                                            : "—"
-                                        : d.lastModified
-                                          ? formatDateTime(d.lastModified)
-                                          : "—"}
+                                    {formatDateTime(
+                                        view === "archived"
+                                            ? (d.archivedAt ?? d.createdAt)
+                                            : d.createdAt,
+                                    )}
                                 </td>
                                 <td className="px-4 py-3.5 text-[13px] align-middle border-b border-card-border">
                                     <StatusBadge status={d.status} />

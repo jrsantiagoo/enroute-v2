@@ -7,33 +7,33 @@ import DriverFormModal from "@/components/driver-management/driver-form-modal";
 import DriverDetailsModal from "@/components/driver-management/driver-details";
 import TableSkeleton from "@/components/ui/table-skeleton";
 import Toast from "@/components/ui/toast";
-import { mockDriverData, type MockDriver } from "@/lib/mock/driver-mock-data";
+import * as driverApi from "@/lib/api/drivers";
+import type { Driver, DriverPayload } from "@/lib/api/drivers";
 
 export default function DriverManagement() {
-    const [drivers, setDrivers] = useState<MockDriver[]>([]);
-    const [editTarget, setEditTarget] = useState<MockDriver | null>(null);
-    const [viewTarget, setViewTarget] = useState<MockDriver | null>(null);
+    const [drivers, setDrivers] = useState<Driver[]>([]);
+    const [editTarget, setEditTarget] = useState<Driver | null>(null);
+    const [viewTarget, setViewTarget] = useState<Driver | null>(null);
     const [toast, setToast] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(true);
+    const [loadError, setLoadError] = useState<string | null>(null);
 
-    // -----------------------------------------------------------------------------
-    // [!!!] - TO IMPLEMENT: loading driver data from database.
-    // -----------------------------------------------------------------------------
-    async function loadDrivers() {
-        setIsLoading(true);
+    // Refreshes skip the skeleton so the table keeps its tab, filters and page after an action.
+    async function loadDrivers({ showSkeleton = true } = {}) {
+        if (showSkeleton) setIsLoading(true);
         try {
-            // // Request archived and active vehicles so the table can show both views
-            // const result = await vehicleApi.getDrivers(true);
-            // if (result.success) {
-            //     setDrivers(result.data);
-            // } else {
-            //     setToast(result.message ?? "Failed to load drivers.");
-            // }
-            setDrivers(mockDriverData);
+            const result = await driverApi.getDriversWithMetrics();
+            setDrivers(result);
+            setLoadError(null);
         } catch (error: any) {
-            setToast(error?.message ?? "Failed to load drivers.");
+            const message = error?.message ?? "Failed to load drivers.";
+            if (showSkeleton) {
+                setLoadError(message);
+            } else {
+                setToast(message);
+            }
         } finally {
-            setIsLoading(false);
+            if (showSkeleton) setIsLoading(false);
         }
     }
 
@@ -41,79 +41,49 @@ export default function DriverManagement() {
         loadDrivers();
     }, []);
 
-    // -----------------------------------------------------------------------------
-    // [!!!] - TO IMPLEMENT: creating driver record.
-    // -----------------------------------------------------------------------------
-    async function handleCreateDriver(data: Partial<MockDriver>) {
-        // try {
-        //     const payload = buildVehiclePayload(data);
-        //     const result = await vehicleApi.createVehicle(payload);
-        //     if (!result.success) {
-        //         throw new Error(result.message ?? "Failed to create vehicle.");
-        //     }
-        //     await loadVehicles();
-        //     setToast("Vehicle added successfully.");
-        // } catch (error: any) {
-        //     setToast(error?.message ?? "Failed to create vehicle.");
-        // }
+    // Errors are rethrown so the form modal stays open and shows them next to the user's input.
+    async function handleCreateDriver(payload: DriverPayload) {
+        await driverApi.createDriver(payload);
+        await loadDrivers({ showSkeleton: false });
+        setToast("Driver added successfully.");
     }
 
-    // -----------------------------------------------------------------------------
-    // [!!!] - TO IMPLEMENT: updating driver record.
-    // -----------------------------------------------------------------------------
-    async function handleUpdateVehicle(data: Partial<MockDriver>) {
-        // if (!editTarget) return;
-        // try {
-        //     const payload = buildVehiclePayload(data);
-        //     const result = await vehicleApi.updateVehicle(
-        //         editTarget.vehicleId_,
-        //         payload,
-        //     );
-        //     if (!result.success) {
-        //         throw new Error(result.message ?? "Failed to update vehicle.");
-        //     }
-        //     await loadVehicles();
-        //     setToast("Vehicle updated successfully.");
-        //     setEditTarget(null);
-        // } catch (error: any) {
-        //     setToast(error?.message ?? "Failed to update vehicle.");
-        // }
+    async function handleUpdateDriver(payload: DriverPayload) {
+        if (!editTarget) return;
+        await driverApi.updateDriver(editTarget.id_, payload);
+        await loadDrivers({ showSkeleton: false });
+        setToast("Driver updated successfully.");
     }
 
-    // -----------------------------------------------------------------------------
-    // [!!!] - TO IMPLEMENT: driver arhiving function.
-    // -----------------------------------------------------------------------------
-    async function handleArchive(driver: MockDriver) {
-        // try {
-        //     const result = await vehicleApi.archiveVehicle(vehicle.vehicleId_);
-        //     if (!result.success) {
-        //         throw new Error(result.message ?? "Failed to archive vehicle.");
-        //     }
-        //     await loadVehicles();
-        //     setToast("Vehicle archived.");
-        // } catch (error: any) {
-        //     setToast(error?.message ?? "Failed to archive vehicle.");
-        // }
+    // Archive and unarchive share one flow because they only differ in the API call and messages.
+    async function runArchiveAction(
+        action: () => Promise<unknown>,
+        successMessage: string,
+        failureMessage: string,
+    ) {
+        try {
+            await action();
+            await loadDrivers({ showSkeleton: false });
+            setToast(successMessage);
+        } catch (error: any) {
+            setToast(error?.message ?? failureMessage);
+        }
     }
 
-    // -----------------------------------------------------------------------------
-    // [!!!] - TO IMPLEMENT: driver unarchive function.
-    // -----------------------------------------------------------------------------
-    async function handleUnarchive(driver: MockDriver) {
-        // try {
-        //     const result = await vehicleApi.unarchiveVehicle(
-        //         vehicle.vehicleId_,
-        //     );
-        //     if (!result.success) {
-        //         throw new Error(
-        //             result.message ?? "Failed to unarchive vehicle.",
-        //         );
-        //     }
-        //     await loadVehicles();
-        //     setToast("Vehicle unarchived.");
-        // } catch (error: any) {
-        //     setToast(error?.message ?? "Failed to unarchive vehicle.");
-        // }
+    function handleArchive(driver: Driver) {
+        return runArchiveAction(
+            () => driverApi.archiveDriver(driver.id_),
+            "Driver archived.",
+            "Failed to archive driver.",
+        );
+    }
+
+    function handleUnarchive(driver: Driver) {
+        return runArchiveAction(
+            () => driverApi.unarchiveDriver(driver.id_),
+            "Driver unarchived.",
+            "Failed to unarchive driver.",
+        );
     }
 
     return (
@@ -128,9 +98,22 @@ export default function DriverManagement() {
                 </div>
             </div>
 
-            <DriverFormBtn /*onCreate={handleCreateVehicle}*/ />
+            <DriverFormBtn onCreate={handleCreateDriver} />
             {isLoading ? (
                 <TableSkeleton rows={8} />
+            ) : loadError ? (
+                <div
+                    role="alert"
+                    className="flex flex-col items-center gap-3 rounded-xl border border-card-border bg-card p-10 text-center"
+                >
+                    <p className="font-semibold text-red-500">{loadError}</p>
+                    <button
+                        onClick={() => loadDrivers()}
+                        className="px-4.5 py-1.5 text-sm font-semibold rounded-lg border border-btn-border bg-btn text-foreground hover:bg-secondary dark:hover:text-primary transition cursor-pointer"
+                    >
+                        Try again
+                    </button>
+                </div>
             ) : (
                 <DriverTable
                     drivers={drivers}
@@ -145,7 +128,7 @@ export default function DriverManagement() {
                 <DriverFormModal
                     initialData={editTarget}
                     onClose={() => setEditTarget(null)}
-                    onSave={handleUpdateVehicle}
+                    onSave={handleUpdateDriver}
                 />
             )}
 
