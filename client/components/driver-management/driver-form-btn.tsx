@@ -5,10 +5,6 @@ import { useState } from "react";
 // import type { Vehicle } from "@/lib/types/vehicle";
 import DriverFormModal from "@/components/driver-management/driver-form-modal";
 
-interface VehicleFormProps {
-    // onCreate?: (data: Partial<Vehicle>) => void;
-}
-
 export default function DriverFormBtn(/*{ onCreate }: VehicleFormProps*/) {
     const [open, setOpen] = useState(false);
 

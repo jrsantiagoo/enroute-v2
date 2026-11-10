@@ -1,0 +1,21 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directories: ["/", "/server", "/client"]
+    target-branch: dev # PRs follow the normal feature -> dev -> main flow
+    schedule:
+      interval: weekly
+    groups:
+      prisma: # prisma and @prisma/client must stay on the same version, majors included
+        patterns: ["prisma", "@prisma/*"]
+      minor-and-patch: # one PR per directory; other majors still get their own PRs
+        update-types: [minor, patch]
+
+  - package-ecosystem: github-actions
+    directory: /
+    target-branch: dev
+    schedule:
+      interval: weekly
+    groups:
+      actions:
+        patterns: ["*"]

@@ -173,18 +173,22 @@ export async function getDrivers() {
 //     });
 // }
 
-export async function getDriverCapacity() {
+// Passing a driverId scopes every query to that driver, which assertDriverAssignable relies on.
+export async function getDriverCapacity(driverId) {
     const drivers = await prisma.agent_profile.findMany({
+        ...(driverId && { where: { id_: driverId } }),
         orderBy: {
             driver_id: "asc",
         },
     });
 
+    const driverFilter = driverId ?? { not: null };
+
     // Aggregate fuel consumed + distance traveled per driver (all-time)
     const fuelLogs = await prisma.fuel_log.findMany({
         where: {
             deleted_at: null,
-            driver_id_: { not: null },
+            driver_id_: driverFilter,
         },
         select: {
             driver_id_: true,
@@ -212,7 +216,7 @@ export async function getDriverCapacity() {
     // Aggregate active hours per driver from scheduled trip durations
     const trips = await prisma.trip.findMany({
         where: {
-            driver_id_: { not: null },
+            driver_id_: driverFilter,
             deleted_at: null,
         },
         select: {
