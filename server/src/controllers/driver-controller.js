@@ -2,7 +2,7 @@ import * as driverService from "../services/driver-services.js";
 
 export async function getDrivers(req, res) {
     try {
-        // Mirrors the vehicle list so archived drivers are only returned on request.
+        // Returns archived drivers too; the client splits them into Active/Archived tabs.
         // const includeArchived = String(req.query.archived) === "true";
         const drivers = await driverService.getDrivers(/*includeArchived*/);
         res.json({
