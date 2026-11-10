@@ -1,4 +1,5 @@
 // driver-services, Prisma mocked
+// Titles that start with a case number (16-1) implement that case in the STSWENG automation test plan.
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
 vi.mock("../../src/lib/prisma.js", () => ({
@@ -66,7 +67,7 @@ describe("getDriverById", () => {
 });
 
 describe("createDriver", () => {
-    it("creates with only whitelisted, trimmed fields", async () => {
+    it("16-4 creates with only whitelisted, trimmed fields", async () => {
         prisma.agent_profile.create.mockResolvedValue({ driver_id: "D-01" });
 
         await driverService.createDriver({
@@ -113,7 +114,7 @@ describe("updateDriver", () => {
 });
 
 describe("archiveDriver", () => {
-    it("sets only archived_at so vehicles are untouched", async () => {
+    it("16-8 sets only archived_at so vehicles are untouched", async () => {
         prisma.agent_profile.findUnique.mockResolvedValue({ id_: DRIVER_UUID, archived_at: null });
         prisma.agent_profile.update.mockResolvedValue({});
 
@@ -156,7 +157,7 @@ describe("assertDriverAssignable", () => {
         prisma.fuel_log.findMany.mockResolvedValue(fuelLogs);
     }
 
-    it("rejects an inactive driver with 409", async () => {
+    it("16-10 rejects an inactive driver with 409", async () => {
         mockWork({});
 
         await expect(driverService.assertDriverAssignable(DRIVER_UUID)).rejects.toMatchObject({
@@ -164,7 +165,7 @@ describe("assertDriverAssignable", () => {
         });
     });
 
-    it("allows a driver with scheduled trip hours", async () => {
+    it("16-11 allows a driver with scheduled trip hours", async () => {
         mockWork({ trips: [{ driver_id_: DRIVER_UUID, route: { totalDurationMinutes: 60 } }] });
 
         await expect(driverService.assertDriverAssignable(DRIVER_UUID)).resolves.toBeUndefined();
