@@ -150,12 +150,12 @@ This project uses a split deployment architecture:
 
 ## CI/CD
 
-GitHub Actions (`.github/workflows/ci.yml`) runs on every pull request and on pushes to `dev` and `main`.
+GitHub Actions (`.github/workflows/ci.yml`) runs on every pull request and on pushes to `dev`, `qa` and `main`.
 
 | Job | Runs on | Checks |
 | --- | --- | --- |
-| `server` | PRs, `dev`, `main` | Vitest suite, `prisma validate`, migrations apply to an empty Postgres, `schema.prisma` matches the migrations (drift), server boots (`/health`) |
-| `client` | PRs, `dev`, `main` | ESLint, typed production build |
+| `server` | PRs, `dev`, `qa`, `main` | Vitest suite, `prisma validate`, migrations apply to an empty Postgres, `schema.prisma` matches the migrations (drift), server boots (`/health`) |
+| `client` | PRs, `dev`, `qa`, `main` | ESLint, typed production build |
 | `e2e (chromium)`, `e2e (firefox)` | PRs | Playwright suite against a throwaway local Supabase (migrated + seeded per run) |
 | `deploy` | `main` | Runs after `server` and `client` pass, in the `production` environment |
 
@@ -187,6 +187,16 @@ It reads its config from `main`, so it starts once this file reaches `main`. Sec
 
 > Schema changes always need a migration (`npx prisma migrate dev --name <change>`). The drift check fails the build when `schema.prisma` and `prisma/migrations` disagree.
 
+### Branch flow
+
+Work moves `feature/* → dev → qa → main`, and each arrow is a pull request:
+
+- **`dev`** collects finished features. Feature branches and Dependabot PRs target it.
+- **`qa`** holds the release candidate that testers verify. Promote it with a PR from `dev` into `qa`.
+- **`main`** is production. Promote with a PR from `qa` into `main`. Every push to `main` deploys.
+
+Merge promotion PRs (`dev → qa`, `qa → main`) with a merge commit, not squash or rebase. That keeps the branches sharing one history, so the next promotion carries only new commits instead of conflicting.
+
 ### One-time setup (in this order)
 
 1. **Render:** in the backend service's settings:
@@ -204,7 +214,7 @@ It reads its config from `main`, so it starts once this file reaches `main`. Sec
    - Add this environment variable (not a secret, since it is public):
      - `PRODUCTION_API_URL`: the backend's public URL, e.g. `https://<service>.onrender.com`. The `deploy` job polls its `/health`.
 
-   Recommended: protect `main` and `dev` with the required checks `server`, `client`, `e2e (chromium)` and `e2e (firefox)`.
+   Recommended: protect `main`, `qa` and `dev` with the required checks `server`, `client`, `e2e (chromium)` and `e2e (firefox)`.
 3. Merge to `main`. The first run creates the `deploy` check.
 4. **Vercel:** in Settings → Deployment Checks, require `server`, `client` and `deploy`. Require all three: when `server` or `client` fails, `deploy` is skipped rather than failed.
 
