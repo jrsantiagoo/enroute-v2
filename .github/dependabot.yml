@@ -8,6 +8,8 @@ updates:
     groups:
       prisma: # prisma and @prisma/client must stay on the same version, majors included
         patterns: ["prisma", "@prisma/*"]
+      vitest: # vitest and @vitest/coverage-v8 must stay on the same version, majors included
+        patterns: ["vitest", "@vitest/*"]
       minor-and-patch: # one PR per directory; other majors still get their own PRs
         update-types: [minor, patch]
 
