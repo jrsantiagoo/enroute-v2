@@ -154,10 +154,12 @@ GitHub Actions (`.github/workflows/ci.yml`) runs on every pull request and on pu
 
 | Job | Runs on | Checks |
 | --- | --- | --- |
-| `server` | PRs, `dev`, `qa`, `main` | Vitest suite, `prisma validate`, migrations apply to an empty Postgres, `schema.prisma` matches the migrations (drift), server boots (`/health`) |
+| `server` | PRs, `dev`, `qa`, `main` | Vitest suite with a coverage report, `prisma validate`, migrations apply to an empty Postgres, `schema.prisma` matches the migrations (drift), server boots (`/health`) |
 | `client` | PRs, `dev`, `qa`, `main` | ESLint, typed production build |
 | `e2e (chromium)`, `e2e (firefox)` | PRs | Playwright suite against a throwaway local Supabase (migrated + seeded per run) |
 | `deploy` | `main` | Runs after `server` and `client` pass, in the `production` environment |
+
+The `server` job reports how much of `server/src` the tests cover. The totals are on each run's Summary page, and the per-file table is in the job log. It is a report only: no minimum is enforced, so it never fails a build. To see it locally, run `npm run test:coverage` in `server/`.
 
 The `deploy` job does four things:
 
@@ -179,6 +181,7 @@ Node.js 24 is pinned in `engines.node` of every `package.json` (root, `server/`,
 
 Dependabot (`.github/dependabot.yml`) opens weekly version-update PRs against `dev`:
 - Prisma packages together, majors included
+- Vitest packages together, majors included (`@vitest/coverage-v8` only works with the same `vitest` version)
 - other npm minor and patch updates in one PR per directory
 - each other npm major update separately
 - GitHub Actions in one PR
