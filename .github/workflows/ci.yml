@@ -37,7 +37,17 @@ jobs:
           cache: npm
           cache-dependency-path: server/package-lock.json
       - run: npm ci
-      - run: npm test
+      - name: Tests with coverage
+        run: npm run test:coverage
+      - name: Coverage summary # report only: shown on the run's Summary page, no minimum is enforced
+        run: |
+          node --input-type=commonjs -e '
+            const total = require("./coverage/coverage-summary.json").total;
+            const rows = ["statements", "branches", "functions", "lines"].map(
+              (metric) => `| ${metric} | ${total[metric].covered} / ${total[metric].total} | ${total[metric].pct}% |`,
+            );
+            console.log(["### Server test coverage (server/src)", "", "| Metric | Covered | % |", "| --- | --- | --- |", ...rows].join("\n"));
+          ' >> "$GITHUB_STEP_SUMMARY"
       - run: npx prisma validate
       - name: Migrations apply to an empty database
         run: npx prisma migrate deploy
