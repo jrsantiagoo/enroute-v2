@@ -79,40 +79,16 @@ export default function RouteOrderingPanel({
 
     return (
         <div
+            className="flex flex-col absolute z-9999 rounded-md bg-card border border-card-border shadow-lg shadow-black/10 dark:shadow-black/50"
             style={{
-                position: "absolute",
                 top: `${PANEL_TOP}px`,
                 left: `${PANEL_LEFT}px`,
-                zIndex: 9999,
                 width: `${PANEL_WIDTH}px`,
-                background: dark ? DARK.panelBg : "#fff",
-                border: `1px solid ${dark ? DARK.panelBorder : "#e5e7eb"}`,
-                borderRadius: "6px",
-                boxShadow: dark
-                    ? "0 4px 20px rgba(0,0,0,0.5)"
-                    : "0 4px 20px rgba(0,0,0,0.12)",
-                fontFamily: "inherit",
-                display: "flex",
-                flexDirection: "column",
             }}
         >
             {/* Header */}
-            <div
-                style={{
-                    padding: "10px 14px",
-                    borderBottom: `1px solid ${dark ? DARK.panelBorder : "#e5e7eb"}`,
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                }}
-            >
-                <span
-                    style={{
-                        fontSize: "13px",
-                        fontWeight: 700,
-                        color: dark ? DARK.text : "#111827",
-                    }}
-                >
+            <div className="flex px-3.5 py-2.5 justify-between items-center border-b border-solid border-card-border">
+                <span className="font-bold text-[13px] text-foreground">
                     Route Plan
                 </span>
                 <span
@@ -136,14 +112,7 @@ export default function RouteOrderingPanel({
             </div>
 
             {/* Scrollable stops list */}
-            <div
-                className="route-scrollbar"
-                style={{
-                    maxHeight: "430px",
-                    overflowY: "auto",
-                    padding: "10px 10px 8px",
-                }}
-            >
+            <div className="route-scrollbar px-2.5 pt-2.5 pb-2 max-h-107.5 overflow-y-auto">
                 <DndContext
                     sensors={sensors}
                     collisionDetection={closestCenter}
@@ -195,14 +164,8 @@ export default function RouteOrderingPanel({
             {/* Error footer */}
             {routeError && (
                 <div
-                    style={{
-                        padding: "7px 14px",
-                        borderTop: `1px solid ${dark ? "rgba(239,68,68,0.4)" : "#fee2e2"}`,
-                        background: dark ? "rgba(239,68,68,0.12)" : "#fff7f7",
-                        fontSize: "11px",
-                        color: dark ? "#fca5a5" : "#dc2626",
-                        borderRadius: "0 0 6px 6px",
-                    }}
+                    className="px-3.5 py-1.75 text-[11px] rounded-b-md border-t border-solid bg-background dark:bg-[#ef4444]/12 
+                        border-[#fee2e2] dark:border-[#ef4444]/40 text-[#dc2626] dark:text-[#fca5a5]"
                 >
                     Could not reach OSRM. Showing stops only.
                 </div>

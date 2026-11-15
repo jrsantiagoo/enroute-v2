@@ -224,7 +224,6 @@ export default function RouteCreationPage() {
                     title="Delete route?"
                     message={`“${deleteTarget.name}” will be permanently removed. This cannot be undone.`}
                     confirmLabel="Delete"
-                    danger
                     onConfirm={confirmDelete}
                     onCancel={() => setDeleteTarget(null)}
                 />

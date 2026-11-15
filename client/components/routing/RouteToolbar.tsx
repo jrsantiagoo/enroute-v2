@@ -48,18 +48,7 @@ export default function RouteToolbar({
     };
 
     return (
-        <div
-            style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "8px",
-                padding: "8px 16px",
-                background: dark ? DARK.toolbarBg : "var(--background)",
-                borderBottom: `1px solid ${dark ? DARK.panelBorder : "#e5e7eb"}`,
-                minHeight: "48px",
-                flexShrink: 0,
-            }}
-        >
+        <div className="flex shrink-0 px-4 py-2 gap-2 min-h-12 items-center bg-background border-b border-card-border">
             <button
                 onClick={onToggleEdit}
                 onMouseEnter={hoverIn}
@@ -122,14 +111,8 @@ export default function RouteToolbar({
                 aria-label="Save route"
             >
                 <svg
-                    width="16"
-                    height="16"
+                    className="w-4 h-4 fill-none stroke-current stroke-2 stroke-linecap-round stroke-linejoin-round"
                     viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
                 >
                     <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
                     <polyline points="17 21 17 13 7 13 7 21" />
