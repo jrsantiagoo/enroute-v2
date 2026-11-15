@@ -1,4 +1,4 @@
-import prisma from "../lib/prisma.js";
+import prisma, { auditedTransaction } from "../lib/prisma.js";
 
 export async function getAllRoutes() {
     return prisma.route.findMany({
@@ -35,7 +35,7 @@ export async function createRoute(route) {
 }
 
 export async function updateStops(id_, stops) {
-    return prisma.$transaction(async (tx) => {
+    return auditedTransaction(async (tx) => {
         await tx.stop.deleteMany({
             where: { route_id_: id_ },
         });
