@@ -6,6 +6,7 @@ import {
     ChevronsLeft,
     ChevronsRight,
     ClipboardList,
+    Database,
     Gauge,
     LayoutDashboard,
     Map,
@@ -25,6 +26,7 @@ const navLinks = [
     { href: "/assignment", label: "Assignment", icon: ClipboardList },
     { href: "/fleet-management", label: "Fleet Management", icon: Van },
     { href: "/driver-management", label: "Driver Management", icon: User },
+    { href: "/audit-log", label: "Audit Log", icon: Database },
 ];
 
 export default function Sidebar({
@@ -99,4 +101,3 @@ export default function Sidebar({
         </div>
     );
 }
-
