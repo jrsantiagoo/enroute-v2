@@ -4,19 +4,20 @@ import {
     Activity,
     Calendar,
     CalendarClock,
-    Car,
+    CreditCard,
+    Phone,
     Clock,
     Fuel,
     Route,
     User,
     X,
 } from "lucide-react";
-import type { MockDriver } from "@/lib/mock/driver-mock-data";
+import type { Driver } from "@/lib/api/drivers";
 import StatusBadge from "../ui/status-badge";
 import { formatDateTime } from "@/lib/routing/formatters";
 
 interface DriverDetailsProps {
-    initialData?: MockDriver | null;
+    initialData?: Driver | null;
     onClose: () => void;
 }
 
@@ -65,17 +66,6 @@ export default function DriverDetailsModal({
                     </h2>
 
                     <div className="grid grid-cols-3 gap-6 w-full font-semibold">
-                        {/* First Row */}
-                        <div className="flex flex-col">
-                            <div className="flex items-center gap-2 text-base text-muted-foreground">
-                                <User size={23} />
-                                <h2 className="mt-1">Driver Name</h2>
-                            </div>
-                            <div className="ml-8 text-foreground">
-                                {initialData?.driverName}
-                            </div>
-                        </div>
-
                         <div className="flex flex-col">
                             <div className="flex items-center gap-2 text-base text-muted-foreground">
                                 <User size={23} />
@@ -98,30 +88,23 @@ export default function DriverDetailsModal({
                             </div>
                         </div>
 
-                        {/* Second Row */}
                         <div className="flex flex-col">
                             <div className="flex items-center gap-2 text-base text-muted-foreground">
-                                <Car size={23} />
-                                <h2 className="mt-1">Preferred Vehicle Type</h2>
+                                <Phone size={21} />
+                                <h2 className="mt-1">Contact Number</h2>
                             </div>
                             <div className="ml-8 text-foreground">
-                                {initialData?.mostDrivenVehicleType == "" ? (
-                                    <div className="italic">
-                                        No assigned vehicle
-                                    </div>
-                                ) : (
-                                    initialData?.mostDrivenVehicleType
-                                )}
+                                {initialData?.contactNumber || "—"}
                             </div>
                         </div>
 
                         <div className="flex flex-col">
                             <div className="flex items-center gap-2 text-base text-muted-foreground">
-                                <Car size={23} />
-                                <h2 className="mt-1">Current Top 3 Vehicles</h2>
+                                <CreditCard size={21} />
+                                <h2 className="mt-1">License Number</h2>
                             </div>
                             <div className="ml-8 text-foreground">
-                                {initialData?.topThreeVehicles}
+                                {initialData?.licenseNumber || "—"}
                             </div>
                         </div>
                     </div>
@@ -178,14 +161,11 @@ export default function DriverDetailsModal({
                                 <Calendar size={21} />
                                 <h2 className="mt-1">Created At</h2>
                             </div>
-                            <div className="text-foreground">{"—"}</div>
-                        </div>
-                        <div className="flex flex-col">
-                            <div className="flex items-center gap-2 text-base text-muted-foreground">
-                                <Clock size={21} />
-                                <h2 className="mt-1">Last Modified</h2>
+                            <div className="text-foreground">
+                                {initialData?.createdAt
+                                    ? formatDateTime(initialData.createdAt)
+                                    : "—"}
                             </div>
-                            <div className="text-foreground">{"—"}</div>
                         </div>
                         {initialData?.archivedAt && (
                             <div className="flex flex-col">
