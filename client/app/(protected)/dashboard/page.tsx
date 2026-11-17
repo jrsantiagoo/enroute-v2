@@ -299,7 +299,7 @@ export default function Dashboard() {
                     <button
                         onClick={handleDownload}
                         className="rounded-lg bg-primary px-4.5 py-1.5 text-sm font-semibold text-primary-foreground shadow transition 
-                        hover:bg-secondary hover:text-foreground dark:hover:text-primary"
+                        hover:bg-secondary hover:text-foreground "
                     >
                         Full Summary
                     </button>

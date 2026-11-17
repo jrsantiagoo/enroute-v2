@@ -216,7 +216,7 @@ export default function DriverView({ items }: DriverViewProps) {
                         disabled={currentPage <= 1}
                         aria-label="Previous page"
                         className="flex items-center justify-center w-7 h-7 rounded-full border border-btn-border bg-card text-muted-foreground
-                            transition hover:bg-secondary dark:hover:text-primary disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+                            transition hover:bg-secondary  disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
                     >
                         <ChevronLeft size={15} strokeWidth={2} />
                     </button>
@@ -230,7 +230,7 @@ export default function DriverView({ items }: DriverViewProps) {
                         disabled={currentPage >= totalPages}
                         aria-label="Next page"
                         className="flex items-center justify-center w-7 h-7 rounded-full border border-btn-border bg-card text-muted-foreground
-                            transition hover:bg-secondary dark:hover:text-primary disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+                            transition hover:bg-secondary  disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
                     >
                         <ChevronRight size={15} strokeWidth={2} />
                     </button>

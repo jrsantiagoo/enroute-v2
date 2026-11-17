@@ -68,7 +68,7 @@ export default function SaveRouteModal({
                     <button
                         onClick={onClose}
                         className="p-1 rounded-md text-muted-foreground leading-none hover:bg-secondary
-                            hover:text-foreground dark:hover:text-primary transition cursor-pointer"
+                            hover:text-foreground  transition cursor-pointer"
                         aria-label="Close"
                     >
                         <X size={15} />
@@ -116,7 +116,7 @@ export default function SaveRouteModal({
                     <button
                         onClick={onClose}
                         className="px-4 py-2 text-[13px] font-medium rounded-sm bg-btn border border-btn-border text-foreground 
-                            hover:bg-secondary dark:hover:text-primary transition duration-350 cursor-pointer"
+                            hover:bg-secondary  transition duration-350 cursor-pointer"
                     >
                         Cancel
                     </button>
@@ -127,7 +127,7 @@ export default function SaveRouteModal({
                                 bg-[#1e293b] dark:bg-btn border-btn-border transition duration-250 
                                 ${
                                     canSave
-                                        ? "hover:bg-secondary hover:text-foreground dark:hover:text-primary opacity-100 cursor-pointer"
+                                        ? "hover:bg-secondary hover:text-foreground  opacity-100 cursor-pointer"
                                         : "opacity-70 cursor-not-allowed"
                                 }`}
                     >
