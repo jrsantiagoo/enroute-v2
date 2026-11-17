@@ -168,7 +168,7 @@ export default function CalendarView({
                     {/* Enables calendar to view previous week */}
                     <button
                         onClick={prevWeek}
-                        className="p-1 rounded-md hover:bg-secondary dark:hover:text-primary transition"
+                        className="p-1 rounded-md hover:bg-secondary  transition"
                     >
                         <ChevronLeft size={18} />
                     </button>
@@ -178,14 +178,14 @@ export default function CalendarView({
                             setCurrentWeekStart(getWeekRange(new Date()).monday)
                         }
                         className="px-3 py-1 text-xs font-semibold rounded-md border border-btn-border 
-                            dark:border-foreground hover:bg-secondary dark:hover:text-primary transition"
+                            dark:border-foreground hover:bg-secondary  transition"
                     >
                         Today
                     </button>
                     {/* Enables calendar to view next week */}
                     <button
                         onClick={nextWeek}
-                        className="p-1 rounded-md hover:bg-secondary dark:hover:text-primary transition"
+                        className="p-1 rounded-md hover:bg-secondary  transition"
                     >
                         <ChevronRight size={18} />
                     </button>
@@ -347,7 +347,7 @@ export default function CalendarView({
                         disabled={currentPage <= 1}
                         aria-label="Previous page"
                         className="flex items-center justify-center w-7 h-7 rounded-full border border-btn-border bg-card text-muted-foreground
-                                        transition hover:bg-secondary dark:hover:text-primary disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+                                        transition hover:bg-secondary  disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
                     >
                         <ChevronLeft size={15} strokeWidth={2} />
                     </button>
@@ -361,7 +361,7 @@ export default function CalendarView({
                         disabled={currentPage >= totalPages}
                         aria-label="Next page"
                         className="flex items-center justify-center w-7 h-7 rounded-full border border-btn-border bg-card text-muted-foreground
-                                        transition hover:bg-secondary dark:hover:text-primary disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+                                        transition hover:bg-secondary  disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
                     >
                         <ChevronRight size={15} strokeWidth={2} />
                     </button>

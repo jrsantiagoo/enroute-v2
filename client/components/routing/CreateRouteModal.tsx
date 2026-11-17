@@ -167,7 +167,7 @@ export default function CreateRouteModal({
                     <button
                         onClick={onClose}
                         className="flex items-center p-1 justify-center rounded-md text-muted-foreground hover:bg-secondary
-                            hover:text-foreground dark:hover:text-primary transition cursor-pointer"
+                            hover:text-foreground  transition cursor-pointer"
                         aria-label="Close"
                     >
                         <X size={20} />
@@ -214,7 +214,7 @@ export default function CreateRouteModal({
                         <button
                             onClick={onClose}
                             className="py-2.25 px-5 text-[13px] font-medium rounded-md bg-btn border border-btn-border text-foreground 
-                                hover:bg-secondary dark:hover:text-primary transition duration-350 cursor-pointer"
+                                hover:bg-secondary  transition duration-350 cursor-pointer"
                         >
                             Cancel
                         </button>
@@ -230,7 +230,7 @@ export default function CreateRouteModal({
                                 bg-[#1e293b] dark:bg-btn border-btn-border transition duration-350 
                                 ${
                                     canSave
-                                        ? "hover:bg-secondary hover:text-foreground dark:hover:text-primary opacity-100 cursor-pointer"
+                                        ? "hover:bg-secondary hover:text-foreground  opacity-100 cursor-pointer"
                                         : "opacity-70 cursor-not-allowed"
                                 }`}
                         >

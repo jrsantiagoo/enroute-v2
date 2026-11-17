@@ -41,7 +41,7 @@ export default function FilterSelect({
                 className={`
                     flex items-center gap-2 rounded-lg border px-3 py-1.5 text-xs text-foreground
                     outline-none focus:ring-1 focus:ring-primary-foreground 
-                    hover:bg-secondary dark:hover:text-primary transition group
+                    hover:bg-secondary  transition group
                     ${
                         isActive
                             ? "border-primary-foreground bg-primary dark:bg-primary-foreground/40"
@@ -70,7 +70,7 @@ export default function FilterSelect({
                             onChange("All");
                             setOpen(false);
                         }}
-                        className="rounded-t-lg px-3 py-1.5 text-left text-xs transition hover:bg-secondary dark:hover:text-primary"
+                        className="rounded-t-lg px-3 py-1.5 text-left text-xs transition hover:bg-secondary "
                     >
                         {label}
                     </button>
@@ -83,7 +83,7 @@ export default function FilterSelect({
                                 setOpen(false);
                             }}
                             className={`
-                                px-3 py-1.5 text-left text-xs transition hover:bg-secondary dark:hover:text-primary
+                                px-3 py-1.5 text-left text-xs transition hover:bg-secondary 
                                 last:rounded-b-lg
                                 ${value === opt ? "bg-primary dark:bg-primary-foreground/35 text-foreground" : ""}
                             `}

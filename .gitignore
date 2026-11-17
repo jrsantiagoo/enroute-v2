@@ -10,3 +10,5 @@ server/src/generated/prisma
 /blob-report/
 /playwright/.cache/
 /playwright/.auth/
+
+/.ui-brandkit/
