@@ -25,8 +25,12 @@ export default function AuditLog() {
             //     setToast(result.message ?? "Failed to load drivers.");
             // }
             setLogs(mockAuditLogData);
-        } catch (error: any) {
-            setToast(error?.message ?? "Failed to load drivers.");
+        } catch (error: unknown) {
+            setToast(
+                error instanceof Error
+                    ? error.message
+                    : "Failed to load drivers.",
+            );
         } finally {
             setIsLoading(false);
         }
