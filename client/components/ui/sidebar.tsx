@@ -6,6 +6,7 @@ import {
     ChevronsLeft,
     ChevronsRight,
     ClipboardList,
+    Database,
     Gauge,
     LayoutDashboard,
     Map,
@@ -25,7 +26,10 @@ const navLinks = [
     { href: "/assignment", label: "Assignment", icon: ClipboardList },
     { href: "/fleet-management", label: "Fleet Management", icon: Van },
     { href: "/driver-management", label: "Driver Management", icon: User },
+    // { href: "/audit-log", label: "Audit Log", icon: Database },
 ];
+
+const auditLink = { href: "/audit-log", label: "Audit Log", icon: Database };
 
 export default function Sidebar({
     collapsed,
@@ -62,7 +66,7 @@ export default function Sidebar({
             </div>
 
             {/* Creates Navigation Links */}
-            <div className="flex flex-col gap-2 ml-2 mr-2 p-2 pt-4 pb-5 flex-1 border-b border-border">
+            <div className="flex flex-col gap-2 ml-2 mr-2 p-2 py-4 flex-1 border-b border-border">
                 {navLinks.map(({ href, label, icon: Icon }) => {
                     const active = pathname === href;
                     return (
@@ -79,6 +83,26 @@ export default function Sidebar({
                         </Link>
                     );
                 })}
+            </div>
+
+            {/* Audit Log Navigation Link */}
+            <div className="flex flex-col gap-2 ml-2 mr-2 p-2 pb-5">
+                {(() => {
+                    const { href, label, icon: Icon } = auditLink;
+                    const active = pathname === href;
+                    return (
+                        <Link
+                            href={href}
+                            className={`flex items-center gap-3 rounded-md p-3 text-sm transition duration-100
+                                ${active ? "bg-primary text-primary-foreground" : "hover:bg-secondary dark:hover:text-primary"}
+                                ${collapsed ? "justify-center" : ""}`}
+                            title={collapsed ? label : undefined}
+                        >
+                            <Icon size={17} />
+                            {!collapsed && <span>{label}</span>}
+                        </Link>
+                    );
+                })()}
             </div>
 
             {/* Allows user to collapse sidebar */}
@@ -100,4 +124,3 @@ export default function Sidebar({
         </div>
     );
 }
-
