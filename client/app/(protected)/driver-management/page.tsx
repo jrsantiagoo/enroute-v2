@@ -30,8 +30,8 @@ export default function DriverManagement() {
             //     setToast(result.message ?? "Failed to load drivers.");
             // }
             setDrivers(mockDriverData);
-        } catch (error: any) {
-            setToast(error?.message ?? "Failed to load drivers.");
+        } catch (error) {
+            setToast(error instanceof Error ? error.message : "Failed to load drivers.");
         } finally {
             setIsLoading(false);
         }

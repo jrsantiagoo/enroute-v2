@@ -1,4 +1,5 @@
 // driver-services, Prisma mocked
+// Titles that start with a case number (16-1) implement that case in the STSWENG automation test plan.
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
 vi.mock("../../src/lib/prisma.js", () => ({
@@ -25,24 +26,13 @@ beforeEach(() => {
 });
 
 describe("getDrivers", () => {
-    it("returns non-archived drivers ordered by driver_id", async () => {
-        const drivers = [{ driver_id: "D-01" }, { driver_id: "D-02" }];
+    // The client splits drivers into Active/Archived tabs, so archived drivers are returned too.
+    it("returns all drivers, archived included, ordered by driver_id", async () => {
+        const drivers = [{ driver_id: "D-01" }, { driver_id: "D-02", archived_at: new Date() }];
         prisma.agent_profile.findMany.mockResolvedValue(drivers);
 
         await expect(driverService.getDrivers()).resolves.toEqual(drivers);
         expect(prisma.agent_profile.findMany).toHaveBeenCalledWith({
-            where: { archived_at: null },
-            orderBy: { driver_id: "asc" },
-        });
-    });
-
-    it("includes archived drivers only when requested", async () => {
-        prisma.agent_profile.findMany.mockResolvedValue([]);
-
-        await driverService.getDrivers(true);
-
-        expect(prisma.agent_profile.findMany).toHaveBeenCalledWith({
-            where: {},
             orderBy: { driver_id: "asc" },
         });
     });
@@ -77,7 +67,7 @@ describe("getDriverById", () => {
 });
 
 describe("createDriver", () => {
-    it("creates with only whitelisted, trimmed fields", async () => {
+    it("16-4 creates with only whitelisted, trimmed fields", async () => {
         prisma.agent_profile.create.mockResolvedValue({ driver_id: "D-01" });
 
         await driverService.createDriver({
@@ -124,7 +114,7 @@ describe("updateDriver", () => {
 });
 
 describe("archiveDriver", () => {
-    it("sets only archived_at so vehicles are untouched", async () => {
+    it("16-8 sets only archived_at so vehicles are untouched", async () => {
         prisma.agent_profile.findUnique.mockResolvedValue({ id_: DRIVER_UUID, archived_at: null });
         prisma.agent_profile.update.mockResolvedValue({});
 
@@ -167,7 +157,7 @@ describe("assertDriverAssignable", () => {
         prisma.fuel_log.findMany.mockResolvedValue(fuelLogs);
     }
 
-    it("rejects an inactive driver with 409", async () => {
+    it("16-10 rejects an inactive driver with 409", async () => {
         mockWork({});
 
         await expect(driverService.assertDriverAssignable(DRIVER_UUID)).rejects.toMatchObject({
@@ -175,7 +165,7 @@ describe("assertDriverAssignable", () => {
         });
     });
 
-    it("allows a driver with scheduled trip hours", async () => {
+    it("16-11 allows a driver with scheduled trip hours", async () => {
         mockWork({ trips: [{ driver_id_: DRIVER_UUID, route: { totalDurationMinutes: 60 } }] });
 
         await expect(driverService.assertDriverAssignable(DRIVER_UUID)).resolves.toBeUndefined();
@@ -193,5 +183,27 @@ describe("getDriverCapacity status", () => {
         const [row] = await driverService.getDriverCapacity();
 
         expect(row.status).toBe("FULLY UTILIZED");
+    });
+});
+
+describe("getDriverCapacity for one driver", () => {
+    // assertDriverAssignable reads the first row, so an unscoped query would check the wrong driver.
+    it("scopes every query to the given driver", async () => {
+        prisma.agent_profile.findMany.mockResolvedValue([]);
+        prisma.trip.findMany.mockResolvedValue([]);
+        prisma.fuel_log.findMany.mockResolvedValue([]);
+
+        await driverService.getDriverCapacity(DRIVER_UUID);
+
+        expect(prisma.agent_profile.findMany).toHaveBeenCalledWith({
+            where: { id_: DRIVER_UUID },
+            orderBy: { driver_id: "asc" },
+        });
+        expect(prisma.trip.findMany).toHaveBeenCalledWith(
+            expect.objectContaining({ where: expect.objectContaining({ driver_id_: DRIVER_UUID }) }),
+        );
+        expect(prisma.fuel_log.findMany).toHaveBeenCalledWith(
+            expect.objectContaining({ where: expect.objectContaining({ driver_id_: DRIVER_UUID }) }),
+        );
     });
 });
