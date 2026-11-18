@@ -5,6 +5,7 @@ import { useState } from "react";
 import FormSelect from "../ui/form-select";
 import { Driver, RoutePlan, Trip } from "@/lib/types/schema";
 import { Vehicle } from "@/lib/types/vehicle";
+import SmartNotifications from "@/components/dashboard/smart-notifications";
 
 interface AssignmentFormModalProps {
     initialData?: Trip | null;
@@ -145,6 +146,13 @@ export default function AssignmentFormModal({
                                 focus:outline-none focus:ring-2 focus:ring-primary-foreground dark:scheme-dark"
                         />
                     </div>
+
+                    {date && (
+                        <SmartNotifications
+                            surface="route_planning"
+                            date={date}
+                        />
+                    )}
 
                     {/* Selection Fields */}
                     <div className="flex flex-col gap-3">

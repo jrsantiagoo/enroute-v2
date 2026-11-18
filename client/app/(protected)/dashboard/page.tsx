@@ -21,6 +21,7 @@ import StatCard from "@/components/dashboard/stat-card";
 import DashboardSkeleton from "@/components/dashboard/dashboard-skeleton";
 import ChartCard from "@/components/dashboard/chart-card";
 import OrdersTable from "@/components/dashboard/orders-table";
+import SmartNotifications from "@/components/dashboard/smart-notifications";
 import { getOrders, getOrdersRange } from "@/lib/api/orders";
 import { getAllTrips, getTripsRange } from "@/lib/api/trips";
 import { getFuelPerOrder, getDistancePerOrder } from "@/lib/api/fuel-log";
@@ -278,6 +279,9 @@ export default function Dashboard() {
                     </span>
                 </button>
             )}
+
+            {/* Smart Notifications */}
+            <SmartNotifications surface="dashboard" />
 
             {/* Header with title and download button */}
             <div className="flex items-center justify-between">

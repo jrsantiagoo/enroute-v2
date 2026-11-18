@@ -19,6 +19,7 @@ import SuggestRoutesModal from "./SuggestRoutesModal";
 import SaveRouteModal from "./SaveRouteModal";
 import { DARK } from "./routeTheme";
 import { createRoute, updateRoute } from "@/lib/api/routes";
+import SmartNotifications from "@/components/dashboard/smart-notifications";
 
 function generateRouteId(): string {
     return `route-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
