@@ -3,11 +3,12 @@
 import { useState, useEffect } from "react";
 import TableSkeleton from "@/components/ui/table-skeleton";
 import AuditTable from "@/components/audit-log/audit-table";
-import { mockAuditLogData, MockLogs } from "@/lib/mock/audit-log-mock-data";
+import { getAuditLog } from "@/lib/api/audit-log";
+import type { AuditLog } from "@/lib/types/schema";
 
 export default function AuditLog() {
-    const [logs, setLogs] = useState<MockLogs[]>([]);
-    const [viewTarget, setViewTarget] = useState<MockLogs | null>(null);
+    const [logs, setLogs] = useState<AuditLog[]>([]);
+    const [viewTarget, setViewTarget] = useState<AuditLog | null>(null);
     const [toast, setToast] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(true);
 
@@ -17,19 +18,12 @@ export default function AuditLog() {
     async function loadLogs() {
         setIsLoading(true);
         try {
-            // // Request archived and active vehicles so the table can show both views
-            // const result = await vehicleApi.getDrivers(true);
-            // if (result.success) {
-            //     setDrivers(result.data);
-            // } else {
-            //     setToast(result.message ?? "Failed to load drivers.");
-            // }
-            setLogs(mockAuditLogData);
+            setLogs(await getAuditLog());
         } catch (error: unknown) {
             setToast(
                 error instanceof Error
                     ? error.message
-                    : "Failed to load drivers.",
+                    : "Failed to load audit logs.",
             );
         } finally {
             setIsLoading(false);
