@@ -112,6 +112,27 @@ export interface DriverCapacity {
     status: string;
 }
 
+export type AuditAction = "INSERT" | "UPDATE" | "DELETE";
+
+export interface AuditActor {
+    id: string | null; // null for system actions (e.g. the sync job)
+    name: string; // "System" or "Unknown user" when there's no matching manager
+    email: string | null;
+}
+
+export interface AuditLog {
+    id: number;
+    table_name: string;
+    record_id: string | null;
+    action: AuditAction;
+    old_data: Record<string, unknown> | null; // null for INSERT
+    new_data: Record<string, unknown> | null; // null for DELETE
+    actor_id: string | null; // same value as actor.id
+    actor: AuditActor;
+    details: string;
+    created_at: string; // ISO datetime string
+}
+
 export interface SuggestedRoute {
     id: string;
     name: string;

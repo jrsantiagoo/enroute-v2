@@ -1,6 +1,6 @@
 "use client";
 
-import { MockLogs } from "@/lib/mock/audit-log-mock-data";
+import type { AuditLog, AuditAction } from "@/lib/types/schema";
 import { useCallback, useMemo, useState } from "react";
 import {
     Search,
@@ -10,7 +10,6 @@ import {
     Ellipsis,
     ChevronLeft,
     ChevronRight,
-    X,
     CalendarClock,
     Table2,
 } from "lucide-react";
@@ -22,10 +21,15 @@ import { useTableActionsMenu } from "@/lib/hooks/useTableActionsMenu";
 import { TableActionsMenu } from "../ui/table-actions-menu";
 
 const ROWS_PER_PAGE_OPTIONS = [10, 20, 50];
+const ACTION_LABEL: Record<AuditAction, string> = {
+    INSERT: "CREATE",
+    UPDATE: "UPDATE",
+    DELETE: "DELETE",
+};
 
 interface AuditLogProps {
-    logs: MockLogs[];
-    onView?: (driver: MockLogs) => void;
+    logs: AuditLog[];
+    onView?: (log: AuditLog) => void;
 }
 
 export default function AuditTable({ logs, onView }: AuditLogProps) {
@@ -42,9 +46,10 @@ export default function AuditTable({ logs, onView }: AuditLogProps) {
             const q = search.toLowerCase();
             const matchesSearch =
                 !search ||
-                l.action?.toLowerCase().includes(q) ||
-                l.user_name?.toLowerCase().includes(q) ||
-                l.user_id?.toLowerCase().includes(q) ||
+                ACTION_LABEL[l.action]?.toLowerCase().includes(q) ||
+                l.action.toLowerCase().includes(q) ||
+                l.actor?.name.toLowerCase().includes(q) ||
+                l.actor_id?.toLowerCase().includes(q) ||
                 l.table_name?.toLowerCase().includes(q);
 
             return matchesSearch;
@@ -53,16 +58,16 @@ export default function AuditTable({ logs, onView }: AuditLogProps) {
 
     // Sorting column accessor
     const getLogVal = useCallback(
-        (l: MockLogs, key: string) => {
+        (l: AuditLog, key: string) => {
             switch (key) {
                 case "timestamp":
                     return l.created_at;
                 case "user":
-                    return l.user_name;
+                    return l.actor?.name ?? "";
                 case "action":
                     return l.action;
                 case "transaction_id":
-                    return l.id;
+                    return String(l.id);
                 case "table_name":
                     return l.table_name;
                 default:
@@ -180,14 +185,16 @@ export default function AuditTable({ logs, onView }: AuditLogProps) {
                                 </td>
                                 <td className="px-4 py-3.5 text-[13px] align-middle font-medium max-w-40 truncate border-b border-card-border">
                                     <div className="font-semibold">
-                                        {l.user_name}
+                                        {l.actor?.name}
                                     </div>
                                     <div className="text-xs text-muted-foreground">
-                                        {l.user_id}
+                                        {l.actor?.email ?? "—"}
                                     </div>
                                 </td>
                                 <td className="px-4 py-3.5 text-[13px] align-middle border-b border-card-border">
-                                    <StatusBadge status={l.action} />
+                                    <StatusBadge
+                                        status={ACTION_LABEL[l.action]}
+                                    />
                                 </td>
 
                                 <td className="px-4 py-3.5 text-[13px] align-middle max-w-90 truncate border-b border-card-border">
@@ -208,7 +215,7 @@ export default function AuditTable({ logs, onView }: AuditLogProps) {
                                         <Ellipsis size={16} />
                                     </button>
 
-                                    {activeMenu === l.id && anchor && (
+                                    {activeMenu === String(l.id) && anchor && (
                                         <TableActionsMenu
                                             ref={menuRef}
                                             anchor={anchor}
@@ -234,8 +241,8 @@ export default function AuditTable({ logs, onView }: AuditLogProps) {
                                     className="py-10 text-center text-muted-foreground"
                                 >
                                     {view === "archived"
-                                        ? "No archived drivers."
-                                        : "No drivers found."}
+                                        ? "No archived logs."
+                                        : "No logs found."}
                                 </td>
                             </tr>
                         )}
