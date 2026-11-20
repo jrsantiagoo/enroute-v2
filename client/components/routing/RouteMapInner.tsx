@@ -27,14 +27,14 @@ L.Icon.Default.mergeOptions({
         "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png",
 });
 
-// CARTO basemaps (free, no API key): Positron for light, Dark Matter for dark.
+// Esri gray basemaps (keyless). Note ArcGIS tile order is {z}/{y}/{x}.
 const BASEMAPS = {
-    light: "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
-    dark: "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
+    light: "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}",
+    dark: "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}",
 } as const;
 
-const CARTO_ATTRIBUTION =
-    '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions" target="_blank" rel="noopener noreferrer">CARTO</a>';
+const BASEMAP_ATTRIBUTION =
+    "Tiles &copy; Esri &mdash; Sources: Esri, HERE, Garmin, &copy; OpenStreetMap contributors, and the GIS User Community";
 
 // Blue route line over a wider white casing so it stays readable on both basemaps.
 const ROUTE_COLOR = "#2563eb";
@@ -190,11 +190,10 @@ export default function RouteMapInner({
             zoomControl={false}
         >
             <TileLayer
-                // key remounts the layer on theme toggle to swap basemaps.
                 key={theme}
-                attribution={CARTO_ATTRIBUTION}
+                attribution={BASEMAP_ATTRIBUTION}
                 url={BASEMAPS[theme]}
-                subdomains="abcd"
+                maxNativeZoom={16}
                 maxZoom={20}
             />
 
