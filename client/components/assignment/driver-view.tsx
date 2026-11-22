@@ -9,13 +9,13 @@ import {
     Route,
     Search,
     User,
-    X,
 } from "lucide-react";
 import { useSort } from "@/lib/hooks/useSort";
 import SortableHeader from "@/components/ui/sortable-header";
 import { DriverCapacity } from "@/lib/types/schema";
 import StatusBadge from "../ui/status-badge";
 import FilterSelect from "../ui/filter-select";
+import ClearFiltersButton from "../ui/clear-filters-btn";
 
 const ROWS_PER_PAGE_OPTIONS = [5, 10, 20];
 
@@ -213,16 +213,7 @@ export default function DriverView({ items }: DriverViewProps) {
 
                 {/* Clear Active Filters Button */}
                 {hasActiveFilters && (
-                    <button
-                        type="button"
-                        onClick={handleClearFilters}
-                        className="flex items-center gap-1.5 rounded-lg border border-border px-3 py-1.5 text-xs font-semibold text-muted-foreground transition hover:bg-secondary hover:text-red-500 dark:hover:text-red-400 cursor-pointer"
-                        title="Clear all filters"
-                        aria-label="Clear all filters"
-                    >
-                        <X size={14} className="shrink-0" />
-                        <span>Clear filters</span>
-                    </button>
+                    <ClearFiltersButton onClick={handleClearFilters} />
                 )}
             </div>
 
