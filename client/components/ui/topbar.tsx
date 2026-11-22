@@ -78,7 +78,7 @@ export default function Topar({ sidebarCollapsed }: TopbarProps) {
                 {/* Allows user to toggle themes */}
                 <button
                     onClick={toggleTheme}
-                    className="p-2 rounded-md hover:bg-secondary dark:hover:text-primary transition duration-300"
+                    className="p-2 rounded-md hover:bg-secondary  transition duration-300"
                     title={theme === "light" ? "Dark mode" : "Light mode"}
                 >
                     {theme === "light" ? <Moon size={17} /> : <Sun size={17} />}
@@ -93,12 +93,12 @@ export default function Topar({ sidebarCollapsed }: TopbarProps) {
                         <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
                             <User size={16} className="text-foreground" />
                         </div>
-                        <span className="max-w-28 text-sm font-medium text-foreground dark:group-hover:text-primary truncate">
+                        <span className="max-w-28 text-sm font-medium text-foreground truncate">
                             {name || "User"}
                         </span>
                         <ChevronDown
                             size={16}
-                            className={`text-muted-foreground dark:group-hover:text-primary transition ${open ? "rotate-180" : ""}`}
+                            className={`text-muted-foreground transition ${open ? "rotate-180" : ""}`}
                         />
                     </button>
 
@@ -119,7 +119,7 @@ export default function Topar({ sidebarCollapsed }: TopbarProps) {
                                         setOpen(false);
                                     }}
                                     className="flex items-center gap-2 w-full px-4 py-2 text-sm text-foreground 
-                                        hover:bg-secondary dark:hover:text-primary rounded-lg"
+                                        hover:bg-secondary rounded-lg"
                                 >
                                     <User size={16} />
                                     Profile
@@ -130,7 +130,7 @@ export default function Topar({ sidebarCollapsed }: TopbarProps) {
                                 <button
                                     onClick={handleLogout}
                                     className="flex items-center gap-2 w-full px-4 py-2 text-sm text-foreground 
-                                        hover:bg-secondary dark:hover:text-primary rounded-lg"
+                                        hover:bg-secondary rounded-lg"
                                 >
                                     <LogOutIcon size={16} />
                                     Sign Out

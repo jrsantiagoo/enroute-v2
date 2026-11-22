@@ -6,11 +6,11 @@ interface ChartCardProps {
 // Chart Card Component
 export default function ChartCard({ title, children }: ChartCardProps) {
     return (
-        <div className="rounded-xl bg-card p-6 shadow-lg shadow-primary border border-card-border">
+        <div className="rounded-xl bg-card p-6 shadow-lg shadow-primary border border-card-border min-w-0">
             <h3 className="mb-4 text-base font-semibold text-foreground">
                 {title}
             </h3>
-            <div className="h-72">{children}</div>
+            <div className="h-72 w-full min-w-0 min-h-[288px]">{children}</div>
         </div>
     );
 }

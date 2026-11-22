@@ -40,7 +40,7 @@ export default function TripDetailsModal({
                 {/* Close button */}
                 <button
                     onClick={onClose}
-                    className="absolute top-4 right-4 p-1 rounded-md text-muted-foreground hover:bg-secondary hover:text-foreground dark:hover:text-primary transition"
+                    className="absolute top-4 right-4 p-1 rounded-md text-muted-foreground hover:bg-secondary hover:text-foreground  transition"
                     title="Close"
                 >
                     <X size={20} />

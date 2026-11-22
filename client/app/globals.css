@@ -4,45 +4,112 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 :root {
-    --background: #f6f9fc;
-    --foreground: #171717;
-    --primary: #d4e9fe; /* Selected */
-    --primary-foreground: #0056a4;
-    --secondary: #c1dff8; /* Hover */
-    --muted-foreground: #6b7280;
-    --border: #d9dfe5;
+    /* Fonts */
+    --font-sans: var(--font-geist-sans);
+    --font-mono: var(--font-geist-mono);
+
+    /* Light Mode Tokens (Brandkit v2.0) */
+    --background: #f4f6fa;
+    --foreground: #111827;
     --card: #ffffff;
-    --card-border: #e5e7eb;
+    --card-border: #e2e8f0;
+    --border: #d1d5db;
+    
+    --primary: #e1edf9;              /* Primary accent bg tint */
+    --primary-foreground: #1a67ae;   
+    --secondary: #f1f5f9;            /* Subtle hover & header tint */
+    --muted: #f1f5f9;
+    --muted-foreground: #64748b;     /* Medium-contrast text */
+    
     --btn: #ffffff;
-    --btn-border: #d9dfe5;
-    --btn-danger: #e7000b;
-    --btn-danger-hover: #c10007;
+    --btn-border: #d1d5db;
+    --btn-danger: #e02424;
+    --btn-danger-hover: #bc1c1c;
+
+    /* Semantic Statuses */
+    --status-active-bg: #ecfdf5;
+    --status-active-fg: #047857;
+    --status-active-bd: #a7f3d0;
+
+    --status-pending-bg: #fffbeb;
+    --status-pending-fg: #b45309;
+    --status-pending-bd: #fde68a;
+
+    --status-failed-bg: #fef2f2;
+    --status-failed-fg: #b91c1c;
+    --status-failed-bd: #fecaca;
+
+    --status-proc-bg: #eff6ff;
+    --status-proc-fg: #1d4ed8;
+    --status-proc-bd: #bfdbfe;
+
+    /* Radius Scale */
+    --r-sm: 6px;
+    --r-md: 8px;
+    --r-lg: 12px;
+    --pad-x: 64px;
+    --max-w: 1280px;
+
+    /* Elevation Shadow */
+    --shadow: 0 4px 10px -2px rgba(37, 99, 235, 0.12), 0 2px 4px -1px rgba(59, 130, 246, 0.06);
+
+    /* Route / Map */
+    --route-map-bg: #f3f4f6;
+    --route-color: #9ca3af;
 }
 
 .dark {
-    --background: #04070f;
-    --foreground: #eaeff5;
-    --primary: #0d263b;
-    --primary-foreground: #008efb;
-    --secondary: #c1dff8;
-    --muted-foreground: #9ca3af;
-    --border: #292f3b;
-    --card: #0d1b2e;
-    --card-border: #1e3a5f;
-    --btn: #0c2a45;
-    --btn-border: #1e466e;
-    --btn-danger: #e7000b;
-    --btn-danger-hover: #c10007;
+    /* Dark Mode Tokens (Harmonized Slate-Grey Canvas + Deep Navy Cards) */
+    --background: #101528;           /* Dark charcoal-slate grey canvas */
+    --foreground: #eaeff5;           /* Crisp light foreground */
+    --card: #0d1b2e;                 /* Midnight navy blue card */
+    --card-border: #1d3a5f;          /* Navy card border */
+    --border: #1d3a5f;               /* Structural border */
+
+    --primary: #0d263b;              /* Active selection tint */
+    --primary-foreground: #008efb;   /* Vibrant blue highlight */
+    --secondary: #13253d;            /* Elevated navy header & row hover */
+    --muted: #13253d;
+    --muted-foreground: #94a3b8;
+
+    --btn: #0c223a;                  /* Recessed navy input & button surface */
+    --btn-border: #1e466e;           /* Control border */
+    --btn-danger: #e02424;
+    --btn-danger-hover: #bc1c1c;
+
+    /* Semantic Statuses (Dark Tinted) */
+    --status-active-bg: rgba(16, 185, 129, 0.15);
+    --status-active-fg: #6ee7b7;
+    --status-active-bd: rgba(16, 185, 129, 0.35);
+
+    --status-pending-bg: rgba(245, 158, 11, 0.15);
+    --status-pending-fg: #fcd34d;
+    --status-pending-bd: rgba(245, 158, 11, 0.35);
+
+    --status-failed-bg: rgba(239, 68, 68, 0.15);
+    --status-failed-fg: #fca5a5;
+    --status-failed-bd: rgba(239, 68, 68, 0.35);
+
+    --status-proc-bg: rgba(59, 130, 246, 0.15);
+    --status-proc-fg: #93c5fd;
+    --status-proc-bd: rgba(59, 130, 246, 0.35);
+
+    /* Elevation Shadow (Dark) */
+    --shadow: 0 4px 10px -2px rgba(0, 70, 162, 0.28), 0 2px 4px -1px rgba(0, 0, 0, 0.60);
+
+    /* Route / Map */
+    --route-map-bg: #101528;
+    --route-color: #94a3b8;
 }
 
-/* Kills every transition, while theme switching, so it'll paint 
-   the whole page instantly */
+/* Kills transitions while theme switching so the page paints instantly */
 html.theme-switching,
 html.theme-switching * {
     transition: none !important;
 }
 
 @theme {
+    /* Color Tokens */
     --color-background: var(--background);
     --color-foreground: var(--foreground);
     --color-primary: var(--primary);
@@ -57,15 +124,41 @@ html.theme-switching * {
     --color-btn-border: var(--btn-border);
     --color-btn-danger: var(--btn-danger);
     --color-btn-danger-hover: var(--btn-danger-hover);
-    --color-x: var(--x);
+    --color-route-map-bg: var(--route-map-bg);
+    --color-route-color: var(--route-color);
 
+    /* Status Color Tokens */
+    --color-status-active-bg: var(--status-active-bg);
+    --color-status-active-fg: var(--status-active-fg);
+    --color-status-active-bd: var(--status-active-bd);
+    --color-status-pending-bg: var(--status-pending-bg);
+    --color-status-pending-fg: var(--status-pending-fg);
+    --color-status-pending-bd: var(--status-pending-bd);
+    --color-status-failed-bg: var(--status-failed-bg);
+    --color-status-failed-fg: var(--status-failed-fg);
+    --color-status-failed-bd: var(--status-failed-bd);
+    --color-status-proc-bg: var(--status-proc-bg);
+    --color-status-proc-fg: var(--status-proc-fg);
+    --color-status-proc-bd: var(--status-proc-bd);
+
+    /* Radius Scale (rounded-full is left intact as default 9999px) */
+    --radius-sm: var(--r-sm);
+    --radius-md: var(--r-md);
+    --radius-lg: var(--r-lg);
+    --radius-xl: var(--r-lg);
+    --radius-2xl: var(--r-lg);
+
+    /* Shadow Token */
+    --shadow: var(--shadow);
+    --shadow-md: var(--shadow);
+    --shadow-lg: var(--shadow);
+
+    /* Fonts & Animations */
     --font-sans: var(--font-geist-sans);
     --font-mono: var(--font-geist-mono);
-    /* Slow pulsing outline used by loading skeletons while a page loads */
     --animate-skeleton: skeleton-pulse 2.4s ease-in-out infinite;
 }
 
-/* Gentle opacity flash that makes skeleton outlines slowly fade in and out */
 @keyframes skeleton-pulse {
     0%,
     100% {
@@ -79,7 +172,7 @@ html.theme-switching * {
 body {
     background: var(--background);
     color: var(--foreground);
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: var(--font-sans);
 }
 
 .dark .leaflet-tile-pane {
@@ -91,34 +184,34 @@ body {
     background: #0c1a2b;
 }
 
-/* Marker popups → midnight-blue card to match the route panel. */
+/* Marker popups */
 .dark .leaflet-popup-content-wrapper,
 .dark .leaflet-popup-tip {
-    background: #0d1b2e;
-    color: #e5edf5;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.5);
+    background: var(--card);
+    color: var(--foreground);
+    box-shadow: var(--shadow);
 }
 .dark .leaflet-popup-content small {
-    color: #94a3b8 !important;
+    color: var(--muted-foreground) !important;
 }
 .dark .leaflet-popup-close-button {
-    color: #94a3b8 !important;
+    color: var(--muted-foreground) !important;
 }
 
-/* Zoom control → navy buttons with light glyphs. */
+/* Zoom control */
 .dark .leaflet-bar a,
 .dark .leaflet-bar a:hover {
-    background: #0d1b2e;
-    color: #e5edf5;
-    border-bottom-color: #1e3a5f;
+    background: var(--card);
+    color: var(--foreground);
+    border-bottom-color: var(--card-border);
 }
 .dark .leaflet-bar a:hover {
-    background: #103a5f;
+    background: var(--secondary);
 }
 
-/* Dark-mode scrollbars for the .route-scrollbar lists. */
+/* Dark-mode scrollbars for the .route-scrollbar lists */
 .dark .route-scrollbar {
-    scrollbar-width: thin; /* Firefox */
+    scrollbar-width: thin;
     scrollbar-color: #cbd5e1 #0b1f35;
 }
 .dark .route-scrollbar::-webkit-scrollbar {
@@ -131,8 +224,6 @@ body {
 .dark .route-scrollbar::-webkit-scrollbar-thumb {
     background: #cbd5e1;
     border-radius: 999px;
-    /* transparent border over a padding-box clip insets the thumb, leaving the
-       track visible on either side for the pill look. */
     border: 3px solid transparent;
     background-clip: padding-box;
 }
@@ -140,18 +231,17 @@ body {
     background: #f1f5f9;
     background-clip: padding-box;
 }
-/* Up/down arrow buttons (WebKit only; Firefox shows its native thin scrollbar). */
+
+/* Up/down arrow buttons */
 .dark .route-scrollbar::-webkit-scrollbar-button:single-button {
     background: #0b1f35;
     height: 12px;
     background-repeat: no-repeat;
     background-position: center;
 }
-.dark
-    .route-scrollbar::-webkit-scrollbar-button:single-button:vertical:decrement {
+.dark .route-scrollbar::-webkit-scrollbar-button:single-button:vertical:decrement {
     background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'><path d='M2.5 6.25L5 3.75l2.5 2.5' fill='none' stroke='%23cbd5e1' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'/></svg>");
 }
-.dark
-    .route-scrollbar::-webkit-scrollbar-button:single-button:vertical:increment {
+.dark .route-scrollbar::-webkit-scrollbar-button:single-button:vertical:increment {
     background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'><path d='M2.5 3.75L5 6.25l2.5-2.5' fill='none' stroke='%23cbd5e1' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'/></svg>");
 }

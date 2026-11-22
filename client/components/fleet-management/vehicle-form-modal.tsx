@@ -184,7 +184,7 @@ export default function VehicleFormModal({
                 <button
                     onClick={handleClose}
                     className="absolute top-4 right-4 p-1 rounded-md text-muted-foreground hover:bg-secondary 
-                        hover:text-foreground dark:hover:text-primary transition"
+                        hover:text-foreground  transition"
                     title="Close"
                 >
                     <X size={20} />
@@ -427,7 +427,7 @@ export default function VehicleFormModal({
                         <button
                             type="button"
                             onClick={handleClose}
-                            className="px-5 py-1.5 text-md rounded-md bg-btn border border-btn-border text-foreground hover:bg-secondary dark:hover:text-primary transition"
+                            className="px-5 py-1.5 text-md rounded-md bg-btn border border-btn-border text-foreground hover:bg-secondary  transition"
                         >
                             Cancel
                         </button>
