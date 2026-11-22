@@ -26,7 +26,6 @@ const navLinks = [
     { href: "/assignment", label: "Assignment", icon: ClipboardList },
     { href: "/fleet-management", label: "Fleet Management", icon: Van },
     { href: "/driver-management", label: "Driver Management", icon: User },
-    // { href: "/audit-log", label: "Audit Log", icon: Database },
 ];
 
 const auditLink = { href: "/audit-log", label: "Audit Log", icon: Database };
@@ -94,46 +93,30 @@ export default function Sidebar({
                         );
                     })}
                 </nav>
-            </div>
 
-            {/* Audit Log Navigation Link */}
-            <div className="flex flex-col gap-2 ml-2 mr-2 p-2 pb-5">
-                {(() => {
-                    const { href, label, icon: Icon } = auditLink;
-                    const active = pathname === href;
-                    return (
-                        <Link
-                            href={href}
-                            className={`flex items-center gap-3 rounded-md p-3 text-sm transition duration-100
-                                ${active ? "bg-primary text-primary-foreground" : "hover:bg-secondary dark:hover:text-primary"}
-                                ${collapsed ? "justify-center" : ""}`}
-                            title={collapsed ? label : undefined}
-                        >
-                            <Icon size={17} />
-                            {!collapsed && <span>{label}</span>}
-                        </Link>
-                    );
-                })()}
-            </div>
-
-            {/* Audit Log Navigation Link */}
-            <div className="flex flex-col gap-2 ml-2 mr-2 p-2 pb-5">
-                {(() => {
-                    const { href, label, icon: Icon } = auditLink;
-                    const active = pathname === href;
-                    return (
-                        <Link
-                            href={href}
-                            className={`flex items-center gap-3 rounded-md p-3 text-sm transition duration-100
-                                ${active ? "bg-primary text-primary-foreground" : "hover:bg-secondary dark:hover:text-primary"}
-                                ${collapsed ? "justify-center" : ""}`}
-                            title={collapsed ? label : undefined}
-                        >
-                            <Icon size={17} />
-                            {!collapsed && <span>{label}</span>}
-                        </Link>
-                    );
-                })()}
+                {/* Audit Log Navigation Link */}
+                <div className="flex flex-col gap-1.5 p-3">
+                    {(() => {
+                        const { href, label, icon: Icon } = auditLink;
+                        const active = pathname === href;
+                        return (
+                            <Link
+                                href={href}
+                                className={`flex items-center gap-3 rounded-md p-3 text-sm transition duration-150
+                                ${
+                                    active
+                                        ? "bg-primary text-primary-foreground"
+                                        : "text-muted-foreground hover:bg-secondary hover:text-foreground"
+                                }
+                                    ${collapsed ? "justify-center px-0" : ""}`}
+                                title={collapsed ? label : undefined}
+                            >
+                                <Icon size={18} />
+                                {!collapsed && <span>{label}</span>}
+                            </Link>
+                        );
+                    })()}
+                </div>
             </div>
 
             {/* Bottom Section: Collapse / Expand Button */}
