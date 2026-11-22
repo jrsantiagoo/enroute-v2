@@ -22,6 +22,7 @@ import type { Trip } from "@/lib/types/schema";
 import { useSort } from "@/lib/hooks/useSort";
 import SortableHeader from "@/components/ui/sortable-header";
 import FilterSelect from "../ui/filter-select";
+import ClearFiltersButton from "../ui/clear-filters-btn";
 import { useTableActionsMenu } from "@/lib/hooks/useTableActionsMenu";
 import { TableActionsMenu } from "@/components/ui/table-actions-menu";
 import StatusBadge from "@/components/ui/status-badge";
@@ -50,14 +51,30 @@ export default function TableView({
     const [search, setSearch] = useState("");
     // Toggles between the Active and Archived views
     const [view, setView] = useState<"active" | "archived">("active");
+    const { activeMenu, setActiveMenu, anchor, menuRef, openMenu } =
+        useTableActionsMenu();
+    const [page, setPage] = useState(1);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
+
+    // Filter States
     const [routeFilter, setRouteFilter] = useState("All");
     const [driverFilter, setDriverFilter] = useState("All");
     const [scheduledFilter, setScheduledFilter] = useState("All");
     const [statusFilter, setStatusFilter] = useState("All");
-    const [page, setPage] = useState(1);
-    const [rowsPerPage, setRowsPerPage] = useState(10);
-    const { activeMenu, setActiveMenu, anchor, menuRef, openMenu } =
-        useTableActionsMenu();
+
+    const hasActiveFilters =
+        routeFilter !== "All" ||
+        driverFilter !== "All" ||
+        scheduledFilter !== "All" ||
+        statusFilter !== "All";
+
+    const handleClearFilters = () => {
+        setRouteFilter("All");
+        setDriverFilter("All");
+        setScheduledFilter("All");
+        setStatusFilter("All");
+        setPage(1);
+    };
 
     // Needed for filtering options
     const routeOptions = [
@@ -206,7 +223,7 @@ export default function TableView({
             </div>
 
             {/* Filter Options */}
-            <div className="-mt-4 mb-3 flex flex-wrap gap-2">
+            <div className="-mt-4 mb-3 flex flex-wrap items-center gap-2">
                 <FilterSelect
                     label="All Routes"
                     value={routeFilter}
@@ -243,6 +260,11 @@ export default function TableView({
                         setPage(1);
                     }}
                 />
+
+                {/* Clear Active Filters Button */}
+                {hasActiveFilters && (
+                    <ClearFiltersButton onClick={handleClearFilters} />
+                )}
             </div>
 
             {/* Route Assignment Table View */}
