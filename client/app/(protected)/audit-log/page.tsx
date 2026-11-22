@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import TableSkeleton from "@/components/ui/table-skeleton";
 import AuditTable from "@/components/audit-log/audit-table";
 import { mockAuditLogData, MockLogs } from "@/lib/mock/audit-log-mock-data";
+import LogDetailsModal from "@/components/audit-log/log-details";
 
 export default function AuditLog() {
     const [logs, setLogs] = useState<MockLogs[]>([]);
@@ -56,6 +57,13 @@ export default function AuditLog() {
                 <TableSkeleton rows={8} />
             ) : (
                 <AuditTable logs={logs} onView={setViewTarget} />
+            )}
+
+            {viewTarget && (
+                <LogDetailsModal
+                    initialData={viewTarget}
+                    onClose={() => setViewTarget(null)}
+                />
             )}
         </div>
     );

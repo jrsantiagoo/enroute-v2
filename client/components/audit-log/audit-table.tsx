@@ -199,7 +199,7 @@ export default function AuditTable({ logs, onView }: AuditLogProps) {
 
                                 <td className="pl-7 px-4 py-3.5 align-middle relative border-b border-card-border">
                                     <button
-                                        // onClick={(e) => openMenu(d.id_, e)}
+                                        onClick={(e) => openMenu(l.id, e)}
                                         className="p-1 rounded-md text-muted-foreground bg-btn border border-btn-border 
                                             hover:bg-secondary hover:text-primary-foreground dark:text-foreground transition
                                             cursor-pointer"
@@ -233,9 +233,7 @@ export default function AuditTable({ logs, onView }: AuditLogProps) {
                                     colSpan={9}
                                     className="py-10 text-center text-muted-foreground"
                                 >
-                                    {view === "archived"
-                                        ? "No archived drivers."
-                                        : "No drivers found."}
+                                    "No logs found."
                                 </td>
                             </tr>
                         )}
