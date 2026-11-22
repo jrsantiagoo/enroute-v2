@@ -13,6 +13,7 @@ import { useState, useCallback } from "react";
 import { useSort } from "@/lib/hooks/useSort";
 import SortableHeader from "@/components/ui/sortable-header";
 import FilterSelect from "../ui/filter-select";
+import ClearFiltersButton from "../ui/clear-filters-btn";
 import StatusBadge from "../ui/status-badge";
 
 interface OrderTableProps {
@@ -26,6 +27,19 @@ export default function OrdersTable({ orders }: OrderTableProps) {
     const [destinationFilter, setDestinationFilter] = useState("All");
     const [contentFilter, setContentFilter] = useState("All");
     const [statusFilter, setStatusFilter] = useState("All");
+
+    const hasActiveFilters =
+        clientFilter !== "All" ||
+        destinationFilter !== "All" ||
+        contentFilter !== "All" ||
+        statusFilter !== "All";
+
+    const handleClearFilters = () => {
+        setClientFilter("All");
+        setDestinationFilter("All");
+        setContentFilter("All");
+        setStatusFilter("All");
+    };
 
     const clients = [...new Set(orders.map((o) => o.client))];
     const destinations = [
@@ -138,7 +152,7 @@ export default function OrdersTable({ orders }: OrderTableProps) {
             </div>
 
             {/* Filter Options */}
-            <div className="-mt-4 mb-3 flex flex-wrap gap-2">
+            <div className="-mt-4 mb-3 flex flex-wrap items-center gap-2">
                 <FilterSelect
                     label="All Clients"
                     value={clientFilter}
@@ -163,6 +177,11 @@ export default function OrdersTable({ orders }: OrderTableProps) {
                     options={statuses}
                     onChange={setStatusFilter}
                 />
+
+                {/* Clear Active Filters Button */}
+                {hasActiveFilters && (
+                    <ClearFiltersButton onClick={handleClearFilters} />
+                )}
             </div>
 
             {/* Scrollable table */}
