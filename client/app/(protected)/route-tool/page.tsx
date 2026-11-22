@@ -181,7 +181,7 @@ export default function RouteCreationPage() {
                 <button
                     onClick={openCreate}
                     className="flex items-center gap-2 px-4 py-1.5 text-sm font-semibold rounded-lg border border-btn-border bg-btn
-                        text-foreground hover:bg-secondary dark:hover:text-primary transition duration-300 cursor-pointer"
+                        text-foreground hover:bg-secondary  transition duration-300 cursor-pointer"
                 >
                     <Plus size={16} />
                     Create New Route
@@ -192,7 +192,7 @@ export default function RouteCreationPage() {
                     title="Refresh"
                     aria-label="Refresh saved routes"
                     className="flex items-center justify-center w-8 h-8 rounded-full border border-btn-border bg-btn 
-                        text-muted-foreground hover:bg-secondary dark:hover:text-primary transition duration-300 cursor-pointer"
+                        text-muted-foreground hover:bg-secondary  transition duration-300 cursor-pointer"
                 >
                     <RefreshCw size={16} />
                 </button>

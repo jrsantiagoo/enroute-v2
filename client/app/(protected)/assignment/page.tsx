@@ -222,7 +222,7 @@ export default function Assignment() {
                             ${
                                 viewMode === "calendar"
                                     ? "bg-primary text-primary-foreground"
-                                    : "text-muted-foreground hover:bg-secondary dark:hover:text-primary"
+                                    : "text-muted-foreground hover:bg-secondary "
                             }`}
                     >
                         <CalendarDays size={16} />
@@ -234,7 +234,7 @@ export default function Assignment() {
                             ${
                                 viewMode === "table"
                                     ? "bg-primary text-primary-foreground"
-                                    : "text-muted-foreground hover:bg-secondary dark:hover:text-primary"
+                                    : "text-muted-foreground hover:bg-secondary "
                             }`}
                     >
                         <List size={16} />
@@ -246,7 +246,7 @@ export default function Assignment() {
                             ${
                                 viewMode === "driver"
                                     ? "bg-primary text-primary-foreground"
-                                    : "text-muted-foreground hover:bg-secondary dark:hover:text-primary"
+                                    : "text-muted-foreground hover:bg-secondary "
                             }`}
                     >
                         <User size={16} />
