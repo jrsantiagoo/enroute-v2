@@ -1,6 +1,6 @@
 "use client";
 
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import Link from "next/link";
 import {
     ChevronsLeft,
@@ -26,7 +26,6 @@ const navLinks = [
     { href: "/assignment", label: "Assignment", icon: ClipboardList },
     { href: "/fleet-management", label: "Fleet Management", icon: Van },
     { href: "/driver-management", label: "Driver Management", icon: User },
-    // { href: "/audit-log", label: "Audit Log", icon: Database },
 ];
 
 const auditLink = { href: "/audit-log", label: "Audit Log", icon: Database };
@@ -39,88 +38,109 @@ export default function Sidebar({
     const pathname = usePathname();
 
     return (
-        <div
-            className={`fixed top-0 left-0 h-screen z-30
+        <aside
+            className={`fixed top-0 left-0 h-screen z-30 flex flex-col justify-between
                 ${collapsed ? "w-20" : "w-64"} 
                 bg-background border-r border-border font-semibold 
                 ${noTransition ? "transition-none" : "transition-[width] duration-300"}`}
         >
-            {/* Route Management Tool Version Text */}
-            <div
-                className={`flex items-center gap-3 h-16 border-b border-border ${collapsed ? "justify-center" : "gap-3"}`}
-            >
-                <div className="flex items-center justify-center rounded-xl w-10 h-10 m-4 bg-linear-to-l from-cyan-400 to-teal-300">
-                    <Gauge size={21} className="text-background" />
+            {/* Top Section: Brand & Nav Links */}
+            <div className="flex flex-col flex-1 min-h-0">
+                {/* Brand Header */}
+                <div
+                    className={`flex items-center h-16 shrink-0 border-b border-border ${
+                        collapsed ? "justify-center" : "gap-3 px-4"
+                    }`}
+                >
+                    <div className="flex items-center justify-center rounded-xl w-10 h-10 bg-linear-to-l from-cyan-400 to-teal-300 shrink-0">
+                        <Gauge size={21} className="text-background" />
+                    </div>
+
+                    {!collapsed && (
+                        <div className="flex flex-col">
+                            <p className="text-sm font-bold text-foreground leading-tight">
+                                EnRoute
+                            </p>
+                            <p className="text-[10px] text-muted-foreground">
+                                Version 2.0
+                            </p>
+                        </div>
+                    )}
                 </div>
 
-                {!collapsed && (
-                    <div className="-ml-4">
-                        <p className="text-sm font-bold text-foreground">
-                            EnRoute
-                        </p>
-                        <p className="text-[10px] text-muted-foreground">
-                            Version 2.0
-                        </p>
-                    </div>
-                )}
+                {/* Navigation Links */}
+                <nav className="flex flex-col gap-1.5 p-3 flex-1 overflow-y-auto">
+                    {navLinks.map(({ href, label, icon: Icon }) => {
+                        const active = pathname === href;
+                        return (
+                            <Link
+                                key={href}
+                                href={href}
+                                className={`flex items-center gap-3 rounded-md p-3 text-sm transition duration-150
+                                    ${
+                                        active
+                                            ? "bg-primary text-primary-foreground"
+                                            : "text-muted-foreground hover:bg-secondary hover:text-foreground"
+                                    }
+                                    ${collapsed ? "justify-center px-0" : ""}`}
+                                title={collapsed ? label : undefined}
+                            >
+                                <Icon size={18} className="shrink-0" />
+                                {!collapsed && (
+                                    <span className="truncate">{label}</span>
+                                )}
+                            </Link>
+                        );
+                    })}
+                </nav>
+
+                {/* Audit Log Navigation Link */}
+                <div className="flex flex-col gap-1.5 p-3">
+                    {(() => {
+                        const { href, label, icon: Icon } = auditLink;
+                        const active = pathname === href;
+                        return (
+                            <Link
+                                href={href}
+                                className={`flex items-center gap-3 rounded-md p-3 text-sm transition duration-150
+                                ${
+                                    active
+                                        ? "bg-primary text-primary-foreground"
+                                        : "text-muted-foreground hover:bg-secondary hover:text-foreground"
+                                }
+                                    ${collapsed ? "justify-center px-0" : ""}`}
+                                title={collapsed ? label : undefined}
+                            >
+                                <Icon size={18} />
+                                {!collapsed && <span>{label}</span>}
+                            </Link>
+                        );
+                    })()}
+                </div>
             </div>
 
-            {/* Creates Navigation Links */}
-            <div className="flex flex-col gap-2 ml-2 mr-2 p-2 py-4 flex-1 border-b border-border">
-                {navLinks.map(({ href, label, icon: Icon }) => {
-                    const active = pathname === href;
-                    return (
-                        <Link
-                            key={href}
-                            href={href}
-                            className={`flex items-center gap-3 rounded-md p-3 text-sm transition duration-100
-                                ${active ? "bg-primary text-primary-foreground" : "hover:bg-secondary dark:hover:text-primary"}
-                                ${collapsed ? "justify-center" : ""}`}
-                            title={collapsed ? label : undefined}
-                        >
-                            <Icon size={17} />
-                            {!collapsed && <span>{label}</span>}
-                        </Link>
-                    );
-                })}
-            </div>
-
-            {/* Audit Log Navigation Link */}
-            <div className="flex flex-col gap-2 ml-2 mr-2 p-2 pb-5">
-                {(() => {
-                    const { href, label, icon: Icon } = auditLink;
-                    const active = pathname === href;
-                    return (
-                        <Link
-                            href={href}
-                            className={`flex items-center gap-3 rounded-md p-3 text-sm transition duration-100
-                                ${active ? "bg-primary text-primary-foreground" : "hover:bg-secondary dark:hover:text-primary"}
-                                ${collapsed ? "justify-center" : ""}`}
-                            title={collapsed ? label : undefined}
-                        >
-                            <Icon size={17} />
-                            {!collapsed && <span>{label}</span>}
-                        </Link>
-                    );
-                })()}
-            </div>
-
-            {/* Allows user to collapse sidebar */}
-            <div className="flex justify-center">
+            {/* Bottom Section: Collapse / Expand Button */}
+            <div className="p-3 border-t border-border shrink-0">
                 <button
                     onClick={onToggle}
-                    aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-                    className="absolute -right-3 top-47 flex items-center justify-center 
-                        w-8 h-8 rounded-full border border-border bg-background
-                        hover:bg-secondary dark:hover:text-primary transition duration-300"
+                    className={`flex items-center gap-3 w-full rounded-md p-2.5 text-sm font-medium text-muted-foreground 
+                        hover:bg-secondary hover:text-foreground transition duration-150 cursor-pointer
+                        ${collapsed ? "justify-center px-0" : ""}`}
+                    title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+                    aria-label={
+                        collapsed ? "Expand sidebar" : "Collapse sidebar"
+                    }
                 >
                     {collapsed ? (
-                        <ChevronsRight size={20} />
+                        <ChevronsRight size={18} className="shrink-0" />
                     ) : (
-                        <ChevronsLeft size={20} />
+                        <>
+                            <ChevronsLeft size={18} className="shrink-0" />
+                            <span className="truncate">Collapse</span>
+                        </>
                     )}
                 </button>
             </div>
-        </div>
+        </aside>
     );
 }

@@ -111,12 +111,10 @@ function PanelZoomControl() {
     return (
         <div
             ref={ref}
-            className="leaflet-bar"
+            className="absolute z-1000 leaflet-bar"
             style={{
-                position: "absolute",
                 top: `${PANEL_TOP}px`,
                 left: `${ZOOM_CONTROL_LEFT}px`,
-                zIndex: 1000,
             }}
         >
             <a
@@ -186,7 +184,7 @@ export default function RouteMapInner({
         <MapContainer
             center={[14.5832, 120.9794]} // Metro Manila default
             zoom={13}
-            style={{ height: "100%", width: "100%" }}
+            className="h-full w-full"
             zoomControl={false}
         >
             <TileLayer
@@ -241,7 +239,7 @@ export default function RouteMapInner({
                         <Popup>
                             <strong>{stop.name}</strong>
                             <br />
-                            <small style={{ color: "#6b7280" }}>
+                            <small className="text-muted-foreground">
                                 {stop.address}
                             </small>
                         </Popup>
@@ -257,7 +255,7 @@ export default function RouteMapInner({
                     <Popup>
                         <strong>{previewStop.name}</strong>
                         <br />
-                        <small style={{ color: "#6b7280" }}>
+                        <small className="text-muted-foreground">
                             {previewStop.address}
                         </small>
                     </Popup>

@@ -2,26 +2,11 @@
 // ssr:false — Leaflet touches `window` on import and breaks SSR.
 import dynamic from "next/dynamic";
 import { Stop } from "@/lib/types/schema";
-import { useTheme } from "@/lib/theme-context";
 
 // Themed placeholder to avoid a light flash before the basemap mounts.
 function MapLoading() {
-    const { theme } = useTheme();
-    const isDark = theme === "dark";
     return (
-        <div
-            style={{
-                height: "100%",
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                justifyContent: "center",
-                background: isDark ? "#1a1d21" : "#f3f4f6",
-                color: isDark ? "#6b7280" : "#9ca3af",
-                gap: "8px",
-                fontSize: "14px",
-            }}
-        >
+        <div className="flex flex-col h-full gap-2 text-sm justify-center items-center bg-route-map-bg text-route-color">
             <span style={{ fontSize: "28px" }}>🗺️</span>
             <span>Loading map…</span>
         </div>

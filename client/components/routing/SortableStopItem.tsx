@@ -90,24 +90,8 @@ export default function SortableStopItem({
         <div ref={setNodeRef} style={style}>
             {/* Segment connector above (skipped for the first stop) */}
             {(distanceLabel || durationLabel) && (
-                <div
-                    style={{
-                        display: "flex",
-                        alignItems: "center",
-                        padding: "2px 8px 2px 32px",
-                        fontSize: "11px",
-                        color: dark ? DARK.textMuted : "#9ca3af",
-                        gap: "4px",
-                    }}
-                >
-                    <div
-                        style={{
-                            width: "1px",
-                            height: "12px",
-                            background: dark ? DARK.connector : "#d1d5db",
-                            marginRight: "4px",
-                        }}
-                    />
+                <div className="flex pr-2 pl-8 py-0.5 gap-1 items-center text-[11px] text-route-color dark:text-muted-foreground">
+                    <div className="mr-1 w-px h-3 bg-[#d1d5db] dark:text-[#2a3f5a]" />
                     {distanceLabel && <span>{distanceLabel}</span>}
                     {distanceLabel && durationLabel && <span>·</span>}
                     {durationLabel && <span>{durationLabel}</span>}
