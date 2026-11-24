@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import TableSkeleton from "@/components/ui/table-skeleton";
 import AuditTable from "@/components/audit-log/audit-table";
+import LogDetailsModal from "@/components/audit-log/log-details";
 import { getAuditLog } from "@/lib/api/audit-log";
 import type { AuditLog } from "@/lib/types/schema";
 

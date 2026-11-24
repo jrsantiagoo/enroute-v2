@@ -14,11 +14,12 @@ import {
     X,
 } from "lucide-react";
 import StatusBadge from "../ui/status-badge";
-import { MockLogs } from "@/lib/mock/audit-log-mock-data";
+// import { MockLogs } from "@/lib/mock/audit-log-mock-data";
+import { AuditLog } from "@/lib/types/schema";
 import { formatDateTime } from "@/lib/routing/formatters";
 
 interface LogDetailsProps {
-    initialData?: MockLogs | null;
+    initialData?: AuditLog | null;
     onClose: () => void;
 }
 
@@ -47,11 +48,11 @@ export default function LogDetailsModal({
         {
             label: "Action by",
             icon: User,
-            value: initialData?.user_id ? (
+            value: initialData?.actor_id ? (
                 <div className="flex flex-col items-end">
-                    <span>{initialData.user_name}</span>
+                    <span>{initialData.actor.name ?? "—"}</span>
                     <span className="text-xs text-muted-foreground">
-                        {initialData.user_id}
+                        {initialData.actor.email ?? "—"}
                     </span>
                 </div>
             ) : (
@@ -175,8 +176,8 @@ export default function LogDetailsModal({
                                     className="overflow-auto p-3 min-h-28 max-h-64 leading-relaxed rounded-lg text-xs font-mono bg-background 
                                                 border border-card-border text-foreground scrollbar-thumb-muted-foreground"
                                 >
-                                    {raw && raw.trim() !== "{}" ? (
-                                        raw
+                                    {raw && Object.keys(raw).length > 0 ? (
+                                        JSON.stringify(raw, null, 2)
                                     ) : (
                                         <span className="italic text-muted-foreground">
                                             {empty}
