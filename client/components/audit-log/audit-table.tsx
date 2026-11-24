@@ -242,7 +242,7 @@ export default function AuditTable({ logs, onView }: AuditLogProps) {
                                     colSpan={9}
                                     className="py-10 text-center text-muted-foreground"
                                 >
-                                    "No logs found."
+                                    No logs found.
                                 </td>
                             </tr>
                         )}
