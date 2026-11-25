@@ -264,7 +264,7 @@ export default function AssignmentFormModal({
                         <button
                             type="button"
                             onClick={handleCancel}
-                            className="px-5 py-1.5 text-md rounded-md bg-btn border border-btn-border text-foreground hover:bg-secondary dark:hover:text-primary transition"
+                            className="px-5 py-1.5 text-md rounded-md bg-btn border border-btn-border text-foreground hover:bg-secondary  transition"
                         >
                             Cancel
                         </button>

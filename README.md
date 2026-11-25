@@ -150,14 +150,16 @@ This project uses a split deployment architecture:
 
 ## CI/CD
 
-GitHub Actions (`.github/workflows/ci.yml`) runs on every pull request and on pushes to `dev` and `main`.
+GitHub Actions (`.github/workflows/ci.yml`) runs on every pull request and on pushes to `dev`, `qa` and `main`.
 
 | Job | Runs on | Checks |
 | --- | --- | --- |
-| `server` | PRs, `dev`, `main` | Vitest suite, `prisma validate`, migrations apply to an empty Postgres, `schema.prisma` matches the migrations (drift), server boots (`/health`) |
-| `client` | PRs, `dev`, `main` | ESLint, typed production build |
+| `server` | PRs, `dev`, `qa`, `main` | Vitest suite with a coverage report, `prisma validate`, migrations apply to an empty Postgres, `schema.prisma` matches the migrations (drift), server boots (`/health`) |
+| `client` | PRs, `dev`, `qa`, `main` | ESLint, typed production build |
 | `e2e (chromium)`, `e2e (firefox)` | PRs | Playwright suite against a throwaway local Supabase (migrated + seeded per run) |
 | `deploy` | `main` | Runs after `server` and `client` pass, in the `production` environment |
+
+The `server` job reports how much of `server/src` the tests cover. The totals are on each run's Summary page, and the per-file table is in the job log. It is a report only: no minimum is enforced, so it never fails a build. To see it locally, run `npm run test:coverage` in `server/`.
 
 The `deploy` job does four things:
 
@@ -179,6 +181,7 @@ Node.js 24 is pinned in `engines.node` of every `package.json` (root, `server/`,
 
 Dependabot (`.github/dependabot.yml`) opens weekly version-update PRs against `dev`:
 - Prisma packages together, majors included
+- Vitest packages together, majors included (`@vitest/coverage-v8` only works with the same `vitest` version)
 - other npm minor and patch updates in one PR per directory
 - each other npm major update separately
 - GitHub Actions in one PR
@@ -186,6 +189,16 @@ Dependabot (`.github/dependabot.yml`) opens weekly version-update PRs against `d
 It reads its config from `main`, so it starts once this file reaches `main`. Security-update PRs, if enabled under Settings → Advanced Security, ignore this config and target `main`.
 
 > Schema changes always need a migration (`npx prisma migrate dev --name <change>`). The drift check fails the build when `schema.prisma` and `prisma/migrations` disagree.
+
+### Branch flow
+
+Work moves `feature/* → dev → qa → main`, and each arrow is a pull request:
+
+- **`dev`** collects finished features. Feature branches and Dependabot PRs target it.
+- **`qa`** holds the release candidate that testers verify. Promote it with a PR from `dev` into `qa`.
+- **`main`** is production. Promote with a PR from `qa` into `main`. Every push to `main` deploys.
+
+Merge promotion PRs (`dev → qa`, `qa → main`) with a merge commit, not squash or rebase. That keeps the branches sharing one history, so the next promotion carries only new commits instead of conflicting.
 
 ### One-time setup (in this order)
 
@@ -204,7 +217,7 @@ It reads its config from `main`, so it starts once this file reaches `main`. Sec
    - Add this environment variable (not a secret, since it is public):
      - `PRODUCTION_API_URL`: the backend's public URL, e.g. `https://<service>.onrender.com`. The `deploy` job polls its `/health`.
 
-   Recommended: protect `main` and `dev` with the required checks `server`, `client`, `e2e (chromium)` and `e2e (firefox)`.
+   Recommended: protect `main`, `qa` and `dev` with the required checks `server`, `client`, `e2e (chromium)` and `e2e (firefox)`.
 3. Merge to `main`. The first run creates the `deploy` check.
 4. **Vercel:** in Settings → Deployment Checks, require `server`, `client` and `deploy`. Require all three: when `server` or `client` fails, `deploy` is skipped rather than failed.
 

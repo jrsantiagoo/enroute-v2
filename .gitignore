@@ -4,9 +4,14 @@ node_modules
 
 server/src/generated/prisma
 
+# Test coverage output (npm run test:coverage)
+coverage/
+
 # Playwright
 /test-results/
 /playwright-report/
 /blob-report/
 /playwright/.cache/
 /playwright/.auth/
+
+/.ui-brandkit/

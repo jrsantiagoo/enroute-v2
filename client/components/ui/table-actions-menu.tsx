@@ -64,7 +64,7 @@ export const TableActionsMenu = forwardRef<
                             ${
                                 a.variant === "danger"
                                     ? "text-red-500 hover:bg-secondary hover:text-red-600"
-                                    : "text-foreground hover:bg-secondary hover:text-primary-foreground dark:hover:text-primary"
+                                    : "text-foreground hover:bg-secondary hover:text-primary-foreground "
                             }`}
                 >
                     {a.icon}

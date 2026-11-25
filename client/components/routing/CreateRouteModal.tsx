@@ -12,12 +12,10 @@ import { DEFAULT_STOPS } from "@/lib/routing/mockData";
 import { fetchRoute } from "@/lib/routing/routingService";
 import { saveRoute, isRouteNameTaken } from "@/lib/routing/storageHelper";
 import { recommendVehicle } from "@/lib/routing/vehicleLogic";
-import { useTheme } from "@/lib/theme-context";
 import RouteMap from "./RouteMap";
 import RouteOrderingPanel from "./RouteOrderingPanel";
 import SuggestRoutesModal from "./SuggestRoutesModal";
 import SaveRouteModal from "./SaveRouteModal";
-import { DARK } from "./routeTheme";
 import { createRoute, updateRoute } from "@/lib/api/routes";
 import SmartNotifications from "@/components/dashboard/smart-notifications";
 
@@ -39,8 +37,6 @@ export default function CreateRouteModal({
     onClose,
     onSaved,
 }: CreateRouteModalProps) {
-    const { theme } = useTheme();
-    const dark = theme === "dark";
     const isEditing = !!editingRoute;
 
     const [stops, setStops] = useState<Stop[]>(
@@ -152,82 +148,30 @@ export default function CreateRouteModal({
 
     return (
         <div
-            style={{
-                position: "fixed",
-                inset: 0,
-                zIndex: 99990,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                padding: "24px",
-                background: "rgba(0,0,0,0.5)",
-            }}
+            className="fixed inset-0 z-99990 flex items-center justify-center bg-black/50"
             onClick={(e) => {
                 if (e.target === e.currentTarget) onClose();
             }}
         >
             <div
-                style={{
-                    background: dark ? DARK.panelBg : "#f8fafc",
-                    borderRadius: "12px",
-                    width: "min(1120px, 96vw)",
-                    height: "min(880px, 90vh)",
-                    display: "flex",
-                    flexDirection: "column",
-                    overflow: "hidden",
-                    border: dark ? `1px solid ${DARK.panelBorder}` : "none",
-                    boxShadow: "0 24px 70px rgba(0,0,0,0.45)",
-                }}
+                className="flex flex-col w-[min(1120px,96vw)] h-[min(880px,90vh)] rounded-xl bg-card border border-card-border
+                    shadow shadow-card-border overflow-hidden"
             >
                 {/* Header */}
-                <div
-                    style={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                        padding: "16px 20px",
-                        flexShrink: 0,
-                    }}
-                >
-                    <div
-                        style={{
-                            display: "flex",
-                            alignItems: "center",
-                            gap: "8px",
-                        }}
-                    >
-                        <MapPin
-                            size={20}
-                            color={dark ? DARK.textMuted : "#6b7280"}
-                            strokeWidth={2}
-                        />
-                        <h2
-                            style={{
-                                margin: 0,
-                                fontSize: "18px",
-                                fontWeight: 700,
-                                color: dark ? DARK.text : "#111827",
-                            }}
-                        >
+                <div className="flex shrink-0 px-5 py-4 justify-between items-center">
+                    <div className="flex items-center gap-2">
+                        <MapPin size={20} className="text-muted-foreground" />
+                        <h2 className="text-lg font-bold text-foreground">
                             {isEditing ? "Edit Route" : "Create Route"}
                         </h2>
                     </div>
                     <button
                         onClick={onClose}
+                        className="flex items-center p-1 justify-center rounded-md text-muted-foreground hover:bg-secondary
+                            hover:text-foreground  transition cursor-pointer"
                         aria-label="Close"
-                        style={{
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            background: "none",
-                            border: "none",
-                            cursor: "pointer",
-                            color: dark ? DARK.textMuted : "#6b7280",
-                            lineHeight: 1,
-                            padding: "0 4px",
-                        }}
                     >
-                        <X size={20} strokeWidth={2} />
+                        <X size={20} />
                     </button>
                 </div>
 
@@ -237,15 +181,7 @@ export default function CreateRouteModal({
                 </div>
 
                 {/* Body — map with the Route Plan panel overlaid */}
-                <div
-                    style={{
-                        flex: 1,
-                        position: "relative",
-                        overflow: "hidden",
-                        margin: "0 16px",
-                        borderRadius: "10px",
-                    }}
-                >
+                <div className="flex-1 relative mx-4 rounded-[10px] overflow-hidden">
                     <RouteMap
                         stops={stops}
                         polyline={polyline}
@@ -272,44 +208,19 @@ export default function CreateRouteModal({
                 </div>
 
                 {/* Footer */}
-                <div
-                    style={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                        gap: "8px",
-                        padding: "14px 20px",
-                        flexShrink: 0,
-                    }}
-                >
+                <div className="flex shrink-0 py-3.5 px-5 gap-2 justify-between items-center">
                     <button
                         onClick={() => setIsSuggestOpen(true)}
-                        style={{
-                            padding: "8px 14px",
-                            background: "transparent",
-                            color: dark ? DARK.accent : "#2563eb",
-                            border: "none",
-                            fontSize: "13px",
-                            fontWeight: 500,
-                            cursor: "pointer",
-                        }}
+                        className="py-2 px-3.5 text-[13px] font-medium text-primary-foreground cursor-pointer"
                     >
                         Suggest Routes
                     </button>
 
-                    <div style={{ display: "flex", gap: "8px" }}>
+                    <div className="flex gap-2">
                         <button
                             onClick={onClose}
-                            style={{
-                                padding: "9px 20px",
-                                background: dark ? DARK.btnBg : "#fff",
-                                color: dark ? DARK.btnText : "#374151",
-                                border: `1px solid ${dark ? DARK.btnBorder : "#d1d5db"}`,
-                                borderRadius: "6px",
-                                fontSize: "13px",
-                                fontWeight: 500,
-                                cursor: "pointer",
-                            }}
+                            className="py-2.25 px-5 text-[13px] font-medium rounded-md bg-btn border border-btn-border text-foreground 
+                                hover:bg-secondary  transition duration-350 cursor-pointer"
                         >
                             Cancel
                         </button>
@@ -321,25 +232,13 @@ export default function CreateRouteModal({
                                     ? undefined
                                     : "Add at least two stops to save"
                             }
-                            style={{
-                                padding: "9px 22px",
-                                background: canSave
-                                    ? dark
-                                        ? DARK.btnBg
-                                        : "#1e293b"
-                                    : dark
-                                      ? "#1e293b"
-                                      : "#9ca3af",
-                                color: dark ? DARK.btnText : "#fff",
-                                border: dark
-                                    ? `1px solid ${DARK.btnBorder}`
-                                    : "none",
-                                borderRadius: "6px",
-                                fontSize: "13px",
-                                fontWeight: 600,
-                                cursor: canSave ? "pointer" : "not-allowed",
-                                opacity: canSave ? 1 : 0.7,
-                            }}
+                            className={`py-2.25 px-5.5 text-[13px] font-semibold rounded-md text-background dark:text-foreground border 
+                                bg-[#1e293b] dark:bg-btn border-btn-border transition duration-350 
+                                ${
+                                    canSave
+                                        ? "hover:bg-secondary hover:text-foreground  opacity-100 cursor-pointer"
+                                        : "opacity-70 cursor-not-allowed"
+                                }`}
                         >
                             {isEditing ? "Save Changes" : "Create Route"}
                         </button>

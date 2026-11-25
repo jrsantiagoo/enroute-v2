@@ -34,7 +34,7 @@ export default function SortableHeader({
     return (
         <th
             className={`cursor-pointer select-none px-4 py-3 text-xs font-bold text-foreground border-b border-card-border 
-                hover:bg-secondary dark:hover:text-primary transition ${className}`}
+                hover:bg-secondary  transition ${className}`}
             onClick={() => onToggle(sortKey)}
         >
             <span className="inline-flex items-center gap-1">

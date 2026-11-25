@@ -2,14 +2,15 @@
 import express from "express";
 import cors from "cors";
 
-import managerRoutes from "./routes/manager-routes.js";
-import routeRoutes from "./routes/route-routes.js";
+import auditLogRoutes from "./routes/audit-log-routes.js";
 import authRoutes from "./routes/auth-routes.js";
-import tripRoutes from "./routes/trip-routes.js";
 import driverRoutes from "./routes/driver-routes.js";
-import orderRoutes from "./routes/order-routes.js";
-import fuelLogRoutes from "./routes/fuel-log-routes.js";
 import efficiencyRoutes from "./routes/efficiency-routes.js";
+import fuelLogRoutes from "./routes/fuel-log-routes.js";
+import managerRoutes from "./routes/manager-routes.js";
+import orderRoutes from "./routes/order-routes.js";
+import routeRoutes from "./routes/route-routes.js";
+import tripRoutes from "./routes/trip-routes.js";
 import vehicleRoutes from "./routes/vehicle-routes.js";
 import smartNotificationRoutes from "./routes/smart-notification-routes.js"; //smart notification routes
 import { startSmartNotificationWarmup } from "./services/smart-notification-service.js"; //smart notification routes
@@ -33,11 +34,13 @@ app.get("/health", (req, res) =>
 app.use("/api/managers", managerRoutes);
 app.use("/api/routes", routeRoutes);
 app.use("/api/auth", authRoutes);
-app.use("/api/trips", tripRoutes);
 app.use("/api/drivers", driverRoutes);
-app.use("/api/orders", orderRoutes);
-app.use("/api/fuel_logs", fuelLogRoutes);
 app.use("/api/efficiency", efficiencyRoutes);
+app.use("/api/fuel_logs", fuelLogRoutes);
+app.use("/api/managers", managerRoutes);
+app.use("/api/orders", orderRoutes);
+app.use("/api/routes", routeRoutes);
+app.use("/api/trips", tripRoutes);
 app.use("/api/vehicles", vehicleRoutes);
 app.use("/api/smart-notifications", smartNotificationRoutes);
 startSmartNotificationWarmup();

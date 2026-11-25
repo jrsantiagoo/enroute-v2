@@ -1,4 +1,4 @@
-import { dailyDistanceData, dailyFuelData } from "./mockData";
+import { dailyDistanceData, dailyFuelData } from "../mock/dashboard-mock-data";
 
 // Helper Function: Computes Trend Line (avg per 3 days)
 export function computeTrend<T extends Record<string, unknown>>(
@@ -18,5 +18,8 @@ export function computeTrend<T extends Record<string, unknown>>(
 }
 
 // Mock Data
-export const dailyDistanceWithTrend = computeTrend( dailyDistanceData, "distance");
+export const dailyDistanceWithTrend = computeTrend(
+    dailyDistanceData,
+    "distance",
+);
 export const dailyFuelWithTrend = computeTrend(dailyFuelData, "fuel");

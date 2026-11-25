@@ -57,7 +57,7 @@ export default function FormSelect({
                 className="flex items-center gap-2 w-full rounded-lg border border-btn-border 
                     px-3 py-2 text-sm text-foreground bg-background
                     focus:outline-none focus:ring-2 focus:ring-primary-foreground
-                    hover:bg-secondary dark:hover:text-primary transition group"
+                    hover:bg-secondary  transition group"
             >
                 {icon && (
                     <span
@@ -101,7 +101,7 @@ export default function FormSelect({
                                     setOpen(false);
                                 }}
                                 className={`w-full px-3 py-2 text-sm text-left transition 
-                                    hover:bg-secondary dark:hover:text-primary
+                                    hover:bg-secondary 
                                     first:rounded-t-lg last:rounded-b-lg
                                     ${
                                         value === optionValue
