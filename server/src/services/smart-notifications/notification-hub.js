@@ -4,6 +4,7 @@ import { enrichTrips } from "./history-repository.js";
 import { getEvents, yearOf } from "./holidays.js";
 import { runImmediate, runFuture } from "./engine.js";
 import { isMaterialChange } from "./materiality.js";
+import { predictionsToLog } from "./model-monitoring.js";
 
 const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
 
@@ -21,9 +22,12 @@ export function createNotificationHub({
     repository,
     providers,
     config,
+    model: fixedModel = null,
+    getModel = async () => fixedModel,
     clock = () => new Date(),
 }) {
     const cache = new Map();
+    let predictionLogWarned = false;
     const inflight = new Map();
 
     // The dashboard looks a week ahead, while route planning only looks at the date of the trip being planned.
@@ -117,14 +121,23 @@ export function createNotificationHub({
             future: null,
             liveOk: null,
             liveCheckedAt: 0,
+            modelVersion: null,
         };
+        const model = await getModel();
+        // A newly promoted or rolled-back model replaces cached results straight away instead of after up to 24 hours.
+        const modelChanged =
+            entry.future != null &&
+            entry.modelVersion !== (model?.trainedAt ?? null);
         const nowMs = now.getTime();
         const immediateDue =
             target.isToday &&
-            (!entry.immediate ||
+            (modelChanged ||
+                !entry.immediate ||
                 nowMs - entry.immediate.at >= config.refreshMs.immediate);
         const futureDue =
-            !entry.future || nowMs - entry.future.at >= config.refreshMs.future;
+            modelChanged ||
+            !entry.future ||
+            nowMs - entry.future.at >= config.refreshMs.future;
         const retryDue =
             entry.liveOk === false &&
             nowMs - entry.liveCheckedAt >= config.refreshMs.immediate;
@@ -162,11 +175,13 @@ export function createNotificationHub({
             trips,
             events,
             config,
+            model,
             live: live.ok ? live : null,
         };
 
         entry.liveOk = live.ok;
         entry.liveCheckedAt = nowMs;
+        entry.modelVersion = model?.trainedAt ?? null;
 
         // Immediate notifications are not computed at all while live data is down, because they are only useful if current.
         if (target.isToday && (immediateDue || recovered)) {
@@ -200,6 +215,24 @@ export function createNotificationHub({
         }
 
         cache.set(target.cacheKey, entry);
+        await logPredictions(context);
+    }
+
+    // Recording predictions is for monitoring only, so a failure here (for example the table is not migrated yet) never affects the notifications.
+    async function logPredictions(context) {
+        if (!repository.savePredictions || !context.model) return;
+        try {
+            const rows = predictionsToLog(context.model, context);
+            if (rows.length)
+                await repository.savePredictions(rows, context.model.trainedAt);
+        } catch (error) {
+            if (!predictionLogWarned)
+                console.warn(
+                    "Smart notifications: could not record predictions:",
+                    error.message,
+                );
+            predictionLogWarned = true;
+        }
     }
 
     // Concurrent requests for the same window share one refresh instead of each hitting the weather and traffic APIs.

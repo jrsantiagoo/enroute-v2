@@ -6,10 +6,18 @@ import {
     fetchWeather,
     fetchDailyWeatherHistory,
 } from "./smart-notifications/providers/weather-provider.js";
+import { createModelSource } from "./smart-notifications/model-source.js";
 import { fetchTraffic } from "./smart-notifications/providers/traffic-provider.js";
 
+// The model comes from the active row in the ModelRun registry, rechecked hourly, and otherwise from model.json (see ml/README.md).
+// With neither, the notifications use plain statistics only.
+const modelSource = createModelSource({
+    prisma,
+    filePath: process.env.SMART_NOTIFICATIONS_MODEL_PATH || undefined,
+});
 const hub = createNotificationHub({
     prisma,
+    getModel: () => modelSource.get(),
     repository: createHistoryRepository(prisma),
     config: NOTIFICATION_CONFIG,
     providers: {

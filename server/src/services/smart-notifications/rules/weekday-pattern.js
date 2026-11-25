@@ -1,9 +1,13 @@
 import { lateRate, toPercent, basisText } from "../stats-utils.js";
 import { DAY_NAMES, dayOfWeekOf, formatDay } from "../time-utils.js";
 import { makeNotification } from "../notification-factory.js";
+import { isLateModelUsable } from "../model-scorer.js";
 
 // Future: weekdays on which routes have finished after 6 PM noticeably more often than on other days.
-export function weekdayPattern({ trips, dates, config }) {
+// Steps aside while the trained late-finish model is usable, because late-risk.js covers the same question.
+export function weekdayPattern({ trips, dates, config, model }) {
+    if (isLateModelUsable(model)) return {};
+
     const targets = dates.slice(0, 3);
     const needed = config.minSamples.weekday;
     const overall = lateRate(trips);

@@ -1,16 +1,34 @@
-import { cutoffAt, formatClock } from "../time-utils.js";
+import { cutoffAt, dayOfWeekOf, formatClock } from "../time-utils.js";
 import { paceStat, basisText } from "../stats-utils.js";
 import { makeNotification } from "../notification-factory.js";
+import { predictPace, modelBasis } from "../model-scorer.js";
 
 // Immediate: active trips projected to run past the 6 PM cutoff.
 // This is a simple estimate (remaining stops x usual minutes per stop x current congestion), not a routing engine.
-export function cutoffRisk({ now, todayKey, trips, active, live, config }) {
+export function cutoffRisk({
+    now,
+    todayKey,
+    trips,
+    active,
+    live,
+    events,
+    model,
+    config,
+}) {
     const running = active.filter((t) => t.remainingStops > 0);
     if (!running.length) return {};
 
-    const pace = paceStat(trips);
+    // The trained model, when usable, estimates today's pace from the weekday, rain and holidays. Otherwise the plain average is used.
+    const modelPace = predictPace(model, {
+        dayOfWeek: dayOfWeekOf(todayKey),
+        precipMm: live.weather?.daily[todayKey]?.precipMm,
+        eventDay: events?.some((e) => e.date === todayKey),
+    });
+    const stat = paceStat(trips);
+    const pace =
+        modelPace == null ? stat : { count: stat.count, mean: modelPace };
     const needed = config.minSamples.stopPace;
-    if (pace.count < needed) {
+    if (modelPace == null && pace.count < needed) {
         return {
             insufficient: [
                 {
@@ -52,7 +70,7 @@ export function cutoffRisk({ now, todayKey, trips, active, live, config }) {
                 title: late
                     ? `${plural(late)} projected to finish after 6 PM`
                     : `${plural(atRisk.length)} projected to finish close to 6 PM`,
-                message: `Remaining stops at the usual ${pace.mean.toFixed(0)} min per stop, slowed by current traffic (${congestion.toFixed(1)}x free-flow), put the latest finish at ${formatClock(worst.finish)}.`,
+                message: `Remaining stops at ${modelPace == null ? "the usual" : "the expected"} ${pace.mean.toFixed(0)} min per stop, slowed by current traffic (${congestion.toFixed(1)}x free-flow), put the latest finish at ${formatClock(worst.finish)}.`,
                 suggestions: [
                     {
                         label: "Defer lower-priority stops to the next working day",
@@ -66,7 +84,10 @@ export function cutoffRisk({ now, todayKey, trips, active, live, config }) {
                         target: "drivers",
                     },
                 ],
-                basis: `${basisText(trips)}; live traffic now`,
+                basis:
+                    modelPace == null
+                        ? `${basisText(trips)}; live traffic now`
+                        : `pace model ${modelBasis(model, "pace")}; live traffic now`,
                 metric: Math.round(worst.overMinutes),
                 metricStep: 15,
             }),

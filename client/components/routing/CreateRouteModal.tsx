@@ -231,6 +231,11 @@ export default function CreateRouteModal({
                     </button>
                 </div>
 
+                {/* Smart Notifications Banner */}
+                <div style={{ margin: "0 16px 12px", flexShrink: 0 }}>
+                    <SmartNotifications surface="route_planning" />
+                </div>
+
                 {/* Body — map with the Route Plan panel overlaid */}
                 <div
                     style={{

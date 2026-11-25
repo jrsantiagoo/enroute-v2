@@ -107,7 +107,7 @@ export function createHistoryRepository(prisma) {
             }));
         },
 
-        // The methods below use the SmartNotificationDismissal, DailyWeather and KnownEvent tables and need no changes.
+        // The methods below use the SmartNotificationDismissal, DailyWeather, KnownEvent and PredictionLog tables and need no changes.
         async loadDailyWeather(since) {
             const rows = await prisma.dailyWeather.findMany({
                 where: { date: { gte: since } },
@@ -131,6 +131,27 @@ export function createHistoryRepository(prisma) {
                     }),
                 ),
             );
+        },
+
+        // Records what the models predicted so ml/monitor.py can later compare it with what happened.
+        // A prediction is refreshed until its day is resolved, then left alone.
+        async savePredictions(rows, modelVersion) {
+            for (const row of rows) {
+                const where = {
+                    kind: row.kind,
+                    target_date: new Date(row.targetDate),
+                    model_version: modelVersion,
+                };
+                const updated = await prisma.predictionLog.updateMany({
+                    where: { ...where, resolved_at: null },
+                    data: { predicted: row.predicted },
+                });
+                if (updated.count === 0)
+                    await prisma.predictionLog.createMany({
+                        data: [{ ...where, predicted: row.predicted }],
+                        skipDuplicates: true,
+                    });
+            }
         },
 
         async loadKnownEvents(fromKey, toKey) {

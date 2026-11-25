@@ -76,7 +76,8 @@ test("advisory only: the module never writes to trips, routes, orders, vehicles 
     ].filter((f) => f.endsWith(".js"));
     const writes =
         /\.(create|createMany|update|updateMany|upsert|delete|deleteMany)\(/;
-    const allowed = /smartNotificationDismissal|dailyWeather/;
+    // The smart notification tables, and PredictionLog, which only holds the models' own predictions for monitoring.
+    const allowed = /smartNotificationDismissal|dailyWeather|predictionLog/;
 
     for (const file of files) {
         for (const line of readFileSync(file, "utf8").split("\n")) {

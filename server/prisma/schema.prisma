@@ -75,6 +75,7 @@ model agent_profile {
 
   //@@index([agent_id_, tenant_id_])
 
+  archived_at DateTime? @db.Timestamptz(6)
   @@map("agent_profile")
 }
 
@@ -320,4 +321,45 @@ enum TagTypes {
   ASSIGNED
 
   //@@schema("trips")
+}
+
+// One row per training run: the model registry and the experiment log in one.
+model ModelRun {
+    id_           String    @id @default(uuid())
+    version       String    @unique
+    trained_at    DateTime
+    // candidate, active, retired, rolled_back or rejected.
+    status        String
+    trips         Int
+    date_from     DateTime  @db.Date
+    date_to       DateTime  @db.Date
+    pace_usable   Boolean
+    late_usable   Boolean
+    pace_error    Float?
+    pace_baseline Float?
+    late_error    Float?
+    late_baseline Float?
+    reason        String?
+    artifact      Json
+    promoted_at   DateTime?
+    created_at    DateTime  @default(now())
+
+    @@index([status])
+}
+
+// A prediction for one day, filled in with what actually happened once the day is over.
+model PredictionLog {
+    id_           String    @id @default(uuid())
+    kind          String
+    target_date   DateTime  @db.Date
+    model_version String
+    predicted     Float
+    actual        Float?
+    sample_size   Int?
+    resolved_at   DateTime?
+    created_at    DateTime  @default(now())
+    updated_at    DateTime  @updatedAt
+
+    @@unique([kind, target_date, model_version])
+    @@index([target_date])
 }

@@ -4,6 +4,7 @@ import { heavyRain } from "./rules/heavy-rain.js";
 import { forecastRain } from "./rules/forecast-rain.js";
 import { holidayEvent } from "./rules/holiday-event.js";
 import { weekdayPattern } from "./rules/weekday-pattern.js";
+import { lateRisk } from "./rules/late-risk.js";
 import { bySeverity } from "./notification-factory.js";
 
 function runRules(rules, context) {
@@ -28,4 +29,4 @@ export const runImmediate = (context) =>
 
 // Future rules may run with context.live set to null. Rules that need the forecast then return nothing.
 export const runFuture = (context) =>
-    runRules([forecastRain, holidayEvent, weekdayPattern], context);
+    runRules([forecastRain, holidayEvent, weekdayPattern, lateRisk], context);
