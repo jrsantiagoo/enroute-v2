@@ -76,7 +76,8 @@ def main():
         conn.execute('DELETE FROM "PredictionLog" WHERE model_version = %s', (version,))
         with conn.cursor() as cur:
             cur.executemany(
-                'INSERT INTO "PredictionLog" (kind, target_date, model_version, predicted) VALUES (%s, %s, %s, %s)',
+                '''INSERT INTO "PredictionLog" (id_, kind, target_date, model_version, predicted, updated_at)
+                   VALUES (gen_random_uuid()::text, %s, %s, %s, %s, now())''',
                 rows,
             )
     print(f"Wrote {len(rows)} simulated predictions for {len(rows) // 2} days ({args.scenario}) for model {version}.")

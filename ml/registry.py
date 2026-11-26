@@ -45,10 +45,10 @@ def register(conn, model):
     with conn.transaction():
         conn.execute(
             """
-            INSERT INTO "ModelRun" (version, trained_at, status, trips, date_from, date_to,
+            INSERT INTO "ModelRun" (id_, version, trained_at, status, trips, date_from, date_to,
                 pace_usable, late_usable, pace_error, pace_baseline, late_error, late_baseline,
                 reason, artifact)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            VALUES (gen_random_uuid()::text, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
             """,
             (
                 model["trainedAt"],

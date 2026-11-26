@@ -103,7 +103,8 @@ def add_trip(conn, day, late, stops=10, minutes_per_stop=25):
 
 def log(conn, kind, day, version, predicted):
     conn.execute(
-        'INSERT INTO "PredictionLog" (kind, target_date, model_version, predicted) VALUES (%s, %s, %s, %s)',
+        """INSERT INTO "PredictionLog" (id_, kind, target_date, model_version, predicted, updated_at)
+           VALUES (gen_random_uuid()::text, %s, %s, %s, %s, now())""",
         (kind, day, version, predicted),
     )
 
