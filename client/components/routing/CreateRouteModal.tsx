@@ -17,6 +17,7 @@ import RouteOrderingPanel from "./RouteOrderingPanel";
 import SuggestRoutesModal from "./SuggestRoutesModal";
 import SaveRouteModal from "./SaveRouteModal";
 import { createRoute, updateRoute } from "@/lib/api/routes";
+import SmartNotifications from "@/components/dashboard/smart-notifications";
 
 function generateRouteId(): string {
     return `route-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
@@ -172,6 +173,11 @@ export default function CreateRouteModal({
                     >
                         <X size={20} />
                     </button>
+                </div>
+
+                {/* Smart Notifications Banner */}
+                <div style={{ margin: "0 16px 12px", flexShrink: 0 }}>
+                    <SmartNotifications surface="route_planning" />
                 </div>
 
                 {/* Body — map with the Route Plan panel overlaid */}
