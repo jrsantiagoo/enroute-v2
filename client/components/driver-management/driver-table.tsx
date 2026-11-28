@@ -15,7 +15,6 @@ import {
     ChevronRight,
     Fuel,
     Route,
-    X,
 } from "lucide-react";
 import type { MockDriver } from "@/lib/mock/driver-mock-data";
 import { useSort } from "@/lib/hooks/useSort";
@@ -29,6 +28,7 @@ import { useTableActionsMenu } from "@/lib/hooks/useTableActionsMenu";
 import { TableActionsMenu } from "@/components/ui/table-actions-menu";
 import StatusBadge from "@/components/ui/status-badge";
 import { formatDateTime } from "@/lib/routing/formatters";
+import ClearFiltersButton from "../ui/clear-filters-btn";
 
 const ROWS_PER_PAGE_OPTIONS = [5, 10, 20];
 const DISTANCE_OPTIONS = ["< 50 km", "50 - 100 km", "> 100 km"];
@@ -328,16 +328,7 @@ export default function DriverTable({
                 />
 
                 {hasActiveFilters && (
-                    <button
-                        type="button"
-                        onClick={handleClearFilters}
-                        className="flex items-center gap-1.5 rounded-lg border border-border px-3 py-1.5 text-xs font-semibold text-muted-foreground transition hover:bg-secondary hover:text-red-500 dark:hover:text-red-400 cursor-pointer"
-                        title="Clear all filters"
-                        aria-label="Clear all filters"
-                    >
-                        <X size={14} className="shrink-0" />
-                        <span>Clear filters</span>
-                    </button>
+                    <ClearFiltersButton onClick={handleClearFilters} />
                 )}
             </div>
 

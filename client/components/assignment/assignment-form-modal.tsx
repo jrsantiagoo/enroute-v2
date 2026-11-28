@@ -5,6 +5,7 @@ import { useState } from "react";
 import FormSelect from "../ui/form-select";
 import { Driver, RoutePlan, Trip } from "@/lib/types/schema";
 import { Vehicle } from "@/lib/types/vehicle";
+import SmartNotifications from "@/components/dashboard/smart-notifications";
 
 interface AssignmentFormModalProps {
     initialData?: Trip | null;
@@ -146,6 +147,13 @@ export default function AssignmentFormModal({
                         />
                     </div>
 
+                    {date && (
+                        <SmartNotifications
+                            surface="route_planning"
+                            date={date}
+                        />
+                    )}
+
                     {/* Selection Fields */}
                     <div className="flex flex-col gap-3">
                         <div className="flex flex-col gap-1 w-50">
@@ -256,7 +264,7 @@ export default function AssignmentFormModal({
                         <button
                             type="button"
                             onClick={handleCancel}
-                            className="px-5 py-1.5 text-md rounded-md bg-btn border border-btn-border text-foreground hover:bg-secondary dark:hover:text-primary transition"
+                            className="px-5 py-1.5 text-md rounded-md bg-btn border border-btn-border text-foreground hover:bg-secondary  transition"
                         >
                             Cancel
                         </button>

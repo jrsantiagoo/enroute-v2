@@ -18,6 +18,10 @@ const STATUS_COLORS: Record<string, { bg: string; fg: string; bd: string }> = {
     PENDING: { bg: "#fffbeb", fg: "#d97706", bd: "#fde68a" },
     PROCESSING: { bg: "#f0f9ff", fg: "#0c4a6e", bd: "#bae6fd" },
     "FULLY UTILIZED": { bg: "#ecfeff", fg: "#0f766e", bd: "#a5f3fc" },
+
+    CREATE: { bg: "#f0fdf4", fg: "#15803d", bd: "#bbf7d0" },
+    UPDATE: { bg: "#fffbeb", fg: "#d97706", bd: "#fde68a" },
+    DELETE: { bg: "#fef2f2", fg: "#b91c1c", bd: "#fecaca" },
 };
 
 const STATUS_COLORS_DARK: Record<
@@ -78,6 +82,21 @@ const STATUS_COLORS_DARK: Record<
         bg: "rgba(20,184,166,0.15)",
         fg: "#5eead4",
         bd: "rgba(20,184,166,0.35)",
+    },
+    CREATE: {
+        bg: "rgba(34,197,94,0.15)",
+        fg: "#86efac",
+        bd: "rgba(34,197,94,0.35)",
+    },
+    UPDATE: {
+        bg: "rgba(234,179,8,0.15)",
+        fg: "#fde047",
+        bd: "rgba(234,179,8,0.35)",
+    },
+    DELETE: {
+        bg: "rgba(239,68,68,0.15)",
+        fg: "#fca5a5",
+        bd: "rgba(239,68,68,0.35)",
     },
 };
 

@@ -21,6 +21,7 @@ import StatCard from "@/components/dashboard/stat-card";
 import DashboardSkeleton from "@/components/dashboard/dashboard-skeleton";
 import ChartCard from "@/components/dashboard/chart-card";
 import OrdersTable from "@/components/dashboard/orders-table";
+import SmartNotifications from "@/components/dashboard/smart-notifications";
 import { getOrders, getOrdersRange } from "@/lib/api/orders";
 import { getAllTrips, getTripsRange } from "@/lib/api/trips";
 import { getFuelPerOrder, getDistancePerOrder } from "@/lib/api/fuel-log";
@@ -279,6 +280,9 @@ export default function Dashboard() {
                 </button>
             )}
 
+            {/* Smart Notifications */}
+            <SmartNotifications surface="dashboard" />
+
             {/* Header with title and download button */}
             <div className="flex items-center justify-between">
                 <div className="flex flex-col justify-center">
@@ -299,7 +303,7 @@ export default function Dashboard() {
                     <button
                         onClick={handleDownload}
                         className="rounded-lg bg-primary px-4.5 py-1.5 text-sm font-semibold text-primary-foreground shadow transition 
-                        hover:bg-secondary hover:text-foreground dark:hover:text-primary"
+                        hover:bg-secondary hover:text-foreground "
                     >
                         Full Summary
                     </button>

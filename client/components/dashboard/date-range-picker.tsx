@@ -115,7 +115,7 @@ export default function DateRangePicker({
             <button
                 onClick={() => setOpen((p) => !p)}
                 className="flex items-center rounded-lg gap-2 px-3 py-1.5 bg-btn text-sm font-semibold 
-                    border border-btn-border text-foreground hover:bg-secondary dark:hover:text-primary transition"
+                    border border-btn-border text-foreground hover:bg-secondary  transition"
             >
                 <CalendarDays size={16} />
                 {label}
@@ -152,7 +152,7 @@ export default function DateRangePicker({
                                 className={`px-2 py-1 text-sm rounded-md transition ${
                                     preset === p
                                         ? "bg-primary text-primary-foreground"
-                                        : "bg-background text-foreground hover:bg-secondary dark:hover:text-primary"
+                                        : "bg-background text-foreground hover:bg-secondary "
                                 }`}
                             >
                                 {presetLabels[p]}
