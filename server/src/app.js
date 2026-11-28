@@ -31,8 +31,7 @@ app.get("/health", (req, res) =>
     res.json({ status: "ok", commit: process.env.RENDER_GIT_COMMIT ?? null }),
 );
 
-app.use("/api/managers", managerRoutes);
-app.use("/api/routes", routeRoutes);
+app.use("/api/audit_log", auditLogRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/drivers", driverRoutes);
 app.use("/api/efficiency", efficiencyRoutes);

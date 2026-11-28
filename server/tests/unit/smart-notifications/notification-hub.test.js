@@ -1,3 +1,4 @@
+// Titles that start with a case number (18-3) implement that case in the STSWENG automation test plan.
 import { test, expect } from "vitest";
 import { createNotificationHub } from "../../../src/services/smart-notifications/notification-hub.js";
 import {
@@ -38,7 +39,7 @@ const keysOf = (list) => list.map((n) => n.key);
 const load = (hub, surface = "dashboard", date) =>
     hub.getNotifications({ managerId: MANAGER, surface, date });
 
-test("every notification has text, suggestions, a data basis and an updatedAt", async () => {
+test("18-1, 18-2 every notification has text, suggestions, a data basis and an updatedAt", async () => {
     const { hub } = setup({
         providerOptions: { forecastRainDate: "2026-11-11" },
         events: [
@@ -73,7 +74,7 @@ test("every notification has text, suggestions, a data basis and an updatedAt", 
     ).toMatch(/based on 120 trips across 2 drivers/);
 });
 
-test("projects a 6 PM overrun for active routes", async () => {
+test("18-6 projects a 6 PM overrun for active routes", async () => {
     const { hub } = setup();
     const result = await load(hub);
     const cutoff = result.immediate.find(
@@ -84,7 +85,7 @@ test("projects a 6 PM overrun for active routes", async () => {
     expect(cutoff.metric).toBeGreaterThan(0);
 });
 
-test("immediate refreshes after 5 minutes, future only after 24 hours", async () => {
+test("18-5 immediate refreshes after 5 minutes, future only after 24 hours", async () => {
     const { hub, providers, clock } = setup({
         events: [{ date: "2026-11-12", name: "Test Parade", kind: "event" }],
     });
@@ -112,7 +113,7 @@ test("immediate refreshes after 5 minutes, future only after 24 hours", async ()
     );
 });
 
-test("live data down hides immediate, keeps future marked stale with its old timestamp, and recovers", async () => {
+test("18-4 live data down hides immediate, keeps future marked stale with its old timestamp, and recovers", async () => {
     const { hub, providers, clock } = setup({
         providerOptions: { forecastRainDate: "2026-11-11" },
     });
@@ -153,7 +154,7 @@ test("live data down on first load: no immediate, future from history and calend
     expect(result.future.every((n) => n.stale)).toBe(true);
 });
 
-test("a dismissal applies only to the surface it was made on", async () => {
+test("18-10 a dismissal applies only to the surface it was made on", async () => {
     const { hub } = setup();
     await hub.dismissNotification({
         managerId: MANAGER,
@@ -223,7 +224,7 @@ test("a cleared condition removes its dismissal, so a recurrence shows fresh and
     expect(traffic.updated).toBe(false);
 });
 
-test("not enough history says so instead of recommending", async () => {
+test("18-3 not enough history says so instead of recommending", async () => {
     const { hub } = setup({
         history: makeHistory(2, 1),
         providerOptions: { rainNow: 5 },
@@ -255,6 +256,15 @@ test("flags a Philippine holiday inside the dashboard window", async () => {
     const result = await load(hub);
     expect(
         result.future.some((n) => n.title.startsWith("Independence Day")),
+    ).toBe(true);
+});
+
+test("18-7 flags Christmas Day when planning a trip for December 25", async () => {
+    const { hub } = setup();
+
+    const planning = await load(hub, "route_planning", "2026-12-25");
+    expect(
+        planning.future.some((n) => n.title.startsWith("Christmas Day")),
     ).toBe(true);
 });
 
