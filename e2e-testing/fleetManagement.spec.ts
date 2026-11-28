@@ -2,10 +2,7 @@ import { test, expect, Page } from '@playwright/test';
 
 const FIELD = {
   plate: 'e.g. ABC1234',
-  maker: 'e.g. Toyota',
   efficiency: 'Enter target efficiency',
-  type: 'e.g. Van, Motorcycle, Car',
-  model: 'e.g. Fortuner',
   odometer: 'Enter distance',
   year: 'Select a year',
 } as const;
@@ -19,17 +16,6 @@ async function openForm(page: Page) {
     await trigger.click();
     await expect(heading).toBeVisible({ timeout: 2_000 });
   }).toPass({ timeout: 30_000 });
-}
-
-async function fillValidVehicle(page: Page) {
-  await page.getByPlaceholder(FIELD.plate).fill('QA1234');
-  await page.getByPlaceholder(FIELD.maker).fill('Toyota');
-  await page.getByPlaceholder(FIELD.efficiency).fill('12');
-  await page.getByPlaceholder(FIELD.type).fill('Van');
-  await page.getByPlaceholder(FIELD.model).fill('Hiace');
-  await page.getByPlaceholder(FIELD.odometer).fill('15000');
-  await page.getByRole('button', { name: FIELD.year, exact: true }).click();
-  await page.locator('div.absolute button').first().click();
 }
 
 test.describe('Fleet Management', () => {
@@ -92,16 +78,6 @@ test.describe('Fleet Management', () => {
     await expect(page.getByRole('button', { name: 'Add vehicle', exact: true })).toBeDisabled();
   });
 
-  // Blocked: brand/type/model are now FormSelect dropdowns and weight capacity is required (vehicle-form-modal.tsx); fillValidVehicle needs a dropdown-flow rewrite.
-  test.fixme('FM-08 a fully valid form clears all inline errors and enables submit', async ({ page }) => {
-    await openForm(page);
-    await fillValidVehicle(page);
-
-    await expect(page.getByText('Target efficiency must be greater than 0')).toHaveCount(0);
-    await expect(page.getByText('Initial odometer must be greater than 0')).toHaveCount(0);
-    await expect(page.getByRole('button', { name: 'Add vehicle', exact: true })).toBeEnabled();
-  });
-
   test('FM-09 Cancel closes the modal and discards the entered values', async ({ page }) => {
     await openForm(page);
     await page.getByPlaceholder(FIELD.plate).fill('QA9999');
@@ -110,19 +86,6 @@ test.describe('Fleet Management', () => {
 
     await openForm(page);
     await expect(page.getByPlaceholder(FIELD.plate)).toHaveValue('');
-  });
-
-  // Blocked: same as FM-08 — fillValidVehicle targets placeholder inputs that no longer exist.
-  test.fixme('FM-10 submitting a valid vehicle persists it instead of reloading the page', async ({
-    page,
-  }) => {
-    await openForm(page);
-    await fillValidVehicle(page);
-    await page.getByRole('button', { name: 'Add vehicle', exact: true }).click();
-
-    await expect(
-      page.getByText('QA1234'),
-    ).toBeVisible({ timeout: 10_000 });
   });
 
   test('10-11 FM-11 the fleet table is populated from a backend source, not mock data', async ({

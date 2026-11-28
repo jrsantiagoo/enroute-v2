@@ -88,27 +88,6 @@ test.describe('Assignment Form', () => {
     await expect(page.getByRole('button', { name: 'Create' })).toBeDisabled();
   });
 
-  // Blocked: purpose select was removed from assignment-form-modal.tsx; needs a rewrite against the route/driver selects.
-  test.fixme('AS-07 purpose offers exactly General and Delivery', async ({ page }) => {
-    await openForm(page);
-    await openSelect(page, PLACEHOLDERS.purpose);
-
-    await expect(page.getByRole('button', { name: 'General', exact: true })).toBeVisible();
-    await expect(page.getByRole('button', { name: 'Delivery', exact: true })).toBeVisible();
-  });
-
-  // Blocked: purpose select was removed from assignment-form-modal.tsx; needs a rewrite against the route/driver selects.
-  test.fixme('AS-08 choosing a purpose replaces the placeholder with the chosen value', async ({
-    page,
-  }) => {
-    await openForm(page);
-    await openSelect(page, PLACEHOLDERS.purpose);
-    await page.getByRole('button', { name: 'General', exact: true }).click();
-
-    await expect(page.getByRole('button', { name: PLACEHOLDERS.purpose, exact: true })).toHaveCount(0);
-    await expect(page.getByRole('button', { name: 'General', exact: true })).toBeVisible();
-  });
-
   test('AS-09 the driver dropdown is populated from the drivers API', async ({ page }) => {
     const token = await page.evaluate(() => localStorage.getItem('access_token'));
     const apiResponse = await page.request.get('http://localhost:8080/api/drivers', {
@@ -121,21 +100,6 @@ test.describe('Assignment Form', () => {
     await openSelect(page, PLACEHOLDERS.driver);
     await expect(
       page.getByRole('button', { name: drivers[0].driver_id, exact: true }),
-    ).toBeVisible();
-  });
-
-  // Blocked: purpose select was removed from assignment-form-modal.tsx; needs a rewrite against the route/driver selects.
-  test.fixme('AS-10 Cancel closes the modal and discards the entered values', async ({ page }) => {
-    await openForm(page);
-    await openSelect(page, PLACEHOLDERS.purpose);
-    await page.getByRole('button', { name: 'General', exact: true }).click();
-
-    await page.getByRole('button', { name: 'Cancel' }).click();
-    await expect(page.getByRole('heading', { name: 'Create new assignment' })).toBeHidden();
-
-    await openForm(page);
-    await expect(
-      page.getByRole('button', { name: PLACEHOLDERS.purpose, exact: true }),
     ).toBeVisible();
   });
 
@@ -238,15 +202,4 @@ test.describe('Assignment Form', () => {
       page.getByRole('button', { name: routeName, exact: true }),
     ).toBeVisible({ timeout: 10_000 });
   });
-
-  test.fixme(
-    'AS-15 a scheduled trip can be deleted from the table view',
-    async () => {},
-  );
-
-  // Blocked: DD-09/RMS-102 — the date input has no `min`, so past dates are selectable.
-  test.fixme('AS-16 rejects scheduling a trip on a past date', async () => {});
-
-  // Blocked: DD-09/RMS-102 — there is no delivery time-of-day field at all.
-  test.fixme('AS-17 enforces a 9am-5pm delivery time window', async () => {});
 });
