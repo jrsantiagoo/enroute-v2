@@ -173,24 +173,4 @@ test.describe('Report Generation', () => {
       pdfText,
     ).toMatch(/\d{4}-\d{2}-\d{2}/);
   });
-
-  test.fixme(
-    '4-2 generates a weekly PDF report with aggregated metrics and correct date range',
-    async () => {},
-  );
-
-  test.fixme(
-    '4-4 generates a report explicitly showing zero values when no trips are completed',
-    async () => {},
-  );
-
-  test.fixme(
-    '4-5 reflects only completed trips in metrics and lists incomplete trips separately',
-    async () => {},
-  );
-
-  test.fixme('4-6 upper management can download the PDF report successfully', async () => {});
-
-  // Blocked: DD-05/RMS-75 — no dedicated report-type selection exists, only Full Summary.
-  test.fixme('4-13 a dedicated End-of-day report type produces a daily-scoped PDF', async () => {});
 });

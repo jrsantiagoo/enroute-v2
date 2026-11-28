@@ -5,8 +5,6 @@ const CURRENT_PASSWORD = process.env.TEST_MANAGER_PASSWORD ?? 'admin';
 const ERR_MISMATCH = 'New password and confirmation do not match';
 const ERR_WRONG_CURRENT = 'Current password is incorrect';
 
-const OK_MESSAGE = 'Password changed successfully!';
-
 function captureDialog(page: Page): Promise<string> {
   return new Promise((resolve) => {
     page.once('dialog', async (dialog) => {
@@ -93,42 +91,6 @@ test.describe('Change Password', () => {
   }) => {
     const message = await submitPasswordChange(page, '', '', '');
     expect(message).toContain(ERR_WRONG_CURRENT);
-  });
-
-  // Skipped: modifies live account data.
-  test.skip('CP-06 rejects a new password below the minimum length', async ({ page }) => {
-    const message = await submitPasswordChange(page, CURRENT_PASSWORD, 'ab1', 'ab1');
-    expect(message).toBeTruthy();
-    expect(
-      message,
-    ).not.toContain(OK_MESSAGE);
-  });
-
-  // Skipped: modifies live account data.
-  test.skip('CP-07 a valid change succeeds and clears the form', async ({ page }) => {
-    test.skip(
-      process.env.RMS_ALLOW_PASSWORD_MUTATION !== '1',
-      'Rotates the shared seed credential. Set RMS_ALLOW_PASSWORD_MUTATION=1 to run.',
-    );
-
-    const temporary = `QaTemp${Date.now()}!`;
-
-    const changed = await submitPasswordChange(page, CURRENT_PASSWORD, temporary, temporary);
-    expect(changed).toContain(OK_MESSAGE);
-
-    await expect(page.locator('#current-password')).toHaveValue('');
-    await expect(page.locator('#new-password')).toHaveValue('');
-    await expect(page.locator('#confirm-password')).toHaveValue('');
-
-    const reverted = await submitPasswordChange(
-      page,
-      temporary,
-      CURRENT_PASSWORD,
-      CURRENT_PASSWORD,
-    );
-    expect(reverted, 'REVERT FAILED — reset admin@gmail.com manually before the next run').toContain(
-      OK_MESSAGE,
-    );
   });
 
   test('CP-08 each password field has an independent visibility toggle', async ({ page }) => {

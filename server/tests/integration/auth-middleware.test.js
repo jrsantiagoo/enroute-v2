@@ -22,7 +22,7 @@ beforeEach(() => {
 });
 
 describe("authenticate middleware", () => {
-    it("401s when the Authorization header is missing", async () => {
+    it("6-16 401s when the Authorization header is missing", async () => {
         const res = await request(app).get("/protected");
 
         expect(res.status).toBe(401);
@@ -41,7 +41,7 @@ describe("authenticate middleware", () => {
         expect(supabase.auth.getUser).not.toHaveBeenCalled();
     });
 
-    it("403s when Supabase rejects the token", async () => {
+    it("6-17 403s when Supabase rejects the token", async () => {
         supabase.auth.getUser.mockResolvedValue({
             data: null,
             error: { message: "invalid JWT" },

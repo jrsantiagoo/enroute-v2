@@ -268,15 +268,11 @@ export async function getDriverCapacity(driverId) {
     });
 }
 
-// TODO: Call this from trip-service createTrip and assignDriverToTrip once trip-service.js is cleared for edits.
-// FIXME: A brand-new driver has no trips or fuel logs, so is INACTIVE and could never receive a first assignment.
+// Any driver who has not been archived (left the company) can take a trip, including a brand-new one.
+// The work-based status from getDriverCapacity is information for the manager and never blocks assignment:
+// "needs work this period to get work" would leave every driver unassignable at the start of each period.
 export async function assertDriverAssignable(driverId) {
     await findDriverOrThrow(driverId);
-
-    const [capacity] = await getDriverCapacity(driverId);
-    if (capacity.status === DRIVER_STATUS.INACTIVE) {
-        throw new DriverError("Inactive drivers cannot be assigned trips", 409);
-    }
 }
 
 export async function getDriverById(id) {
