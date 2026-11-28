@@ -31,7 +31,7 @@ test.describe('Login', () => {
     await expect(page.locator('#password')).toHaveAttribute('type', 'password');
   });
 
-  test('LG-02 rejects submission when both fields are empty', async ({ page }) => {
+  test('6-2 LG-02 rejects submission when both fields are empty', async ({ page }) => {
     await page.getByRole('button', { name: 'Sign In' }).click();
     await expect(page.getByText('Email and password are required', { exact: true })).toBeVisible();
   });
@@ -48,7 +48,7 @@ test.describe('Login', () => {
     await expect(page.getByText('Password is required', { exact: true })).toBeVisible();
   });
 
-  test('LG-05 surfaces the backend error for credentials that do not exist', async ({ page }) => {
+  test('6-5 LG-05 surfaces the backend error for credentials that do not exist', async ({ page }) => {
     await fillReactInput(page, '#email', 'no-such-user@example.com');
     await fillReactInput(page, '#password', 'definitely-not-the-password');
     await page.getByRole('button', { name: 'Sign In' }).click();
@@ -128,7 +128,7 @@ test.describe('Login', () => {
     await expect(page.getByRole('button', { name: 'Signing in...' })).toBeDisabled();
   });
 
-  test('LG-11 valid credentials land on the dashboard and persist both tokens', async ({ page }) => {
+  test('6-11 LG-11 valid credentials land on the dashboard and persist both tokens', async ({ page }) => {
     await fillReactInput(page, '#email', MANAGER_EMAIL);
     await fillReactInput(page, '#password', MANAGER_PASSWORD);
     await page.getByRole('button', { name: 'Sign In' }).click();
@@ -144,7 +144,7 @@ test.describe('Login', () => {
     expect(tokens.refresh).toBeTruthy();
   });
 
-  test('LG-12 an unauthenticated visit to /dashboard is redirected to login', async ({ page }) => {
+  test('6-12 LG-12 an unauthenticated visit to /dashboard is redirected to login', async ({ page }) => {
     await page.goto('/dashboard');
     await expect(page.getByRole('heading', { name: 'Welcome' })).toBeVisible({
       timeout: 30_000,

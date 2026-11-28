@@ -72,14 +72,14 @@ test.describe('Fleet Management', () => {
     await expect(page.getByRole('button', { name: 'Add vehicle', exact: true })).toBeDisabled();
   });
 
-  test('FM-05 rejects a target efficiency of zero with an inline message', async ({ page }) => {
+  test('10-5 FM-05 rejects a target efficiency of zero with an inline message', async ({ page }) => {
     await openForm(page);
     await page.getByPlaceholder(FIELD.efficiency).fill('0');
     await expect(page.getByText('Target efficiency must be greater than 0')).toBeVisible();
     await expect(page.getByRole('button', { name: 'Add vehicle', exact: true })).toBeDisabled();
   });
 
-  test('FM-06 rejects a negative target efficiency', async ({ page }) => {
+  test('10-6 FM-06 rejects a negative target efficiency', async ({ page }) => {
     await openForm(page);
     await page.getByPlaceholder(FIELD.efficiency).fill('-5');
     await expect(page.getByText('Target efficiency must be greater than 0')).toBeVisible();
@@ -125,7 +125,7 @@ test.describe('Fleet Management', () => {
     ).toBeVisible({ timeout: 10_000 });
   });
 
-  test('FM-11 the fleet table is populated from a backend source, not mock data', async ({
+  test('10-11 FM-11 the fleet table is populated from a backend source, not mock data', async ({
     page,
   }) => {
     const vehicleRequest = page

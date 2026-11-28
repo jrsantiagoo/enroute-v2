@@ -63,13 +63,13 @@ test.describe('Assignment Form', () => {
     await expect(page.getByRole('button', { name: 'Create' })).toBeVisible();
   });
 
-  test('AS-04 the scheduled date defaults to today', async ({ page }) => {
+  test('8-4 AS-04 the scheduled date defaults to today', async ({ page }) => {
     await openForm(page);
     const today = new Date().toISOString().split('T')[0];
     await expect(page.locator('input[type="date"]')).toHaveValue(today);
   });
 
-  test('AS-05 Create stays disabled until route, driver and date are all set', async ({
+  test('8-5 AS-05 Create stays disabled until route, driver and date are all set', async ({
     page,
   }) => {
     await openForm(page);
@@ -82,7 +82,7 @@ test.describe('Assignment Form', () => {
     await expect(create, 'driver and date without a route is not enough').toBeDisabled();
   });
 
-  test('AS-06 clearing the scheduled date re-disables Create', async ({ page }) => {
+  test('8-6 AS-06 clearing the scheduled date re-disables Create', async ({ page }) => {
     await openForm(page);
     await page.locator('input[type="date"]').fill('');
     await expect(page.getByRole('button', { name: 'Create' })).toBeDisabled();

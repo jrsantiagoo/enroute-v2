@@ -45,7 +45,7 @@ beforeEach(() => {
 });
 
 describe("POST /api/auth/login", () => {
-    it("returns tokens and the manager profile", async () => {
+    it("6-14 returns tokens and the manager profile", async () => {
         supabase.auth.signInWithPassword.mockResolvedValue({
             data: { user: { id: USER_ID }, session: SESSION },
             error: null,
@@ -67,7 +67,7 @@ describe("POST /api/auth/login", () => {
         });
     });
 
-    it("400s with Supabase's message on bad credentials", async () => {
+    it("6-15 400s with Supabase's message on bad credentials", async () => {
         supabase.auth.signInWithPassword.mockResolvedValue({
             data: null,
             error: { message: "Invalid login credentials" },
@@ -140,14 +140,14 @@ describe("POST /api/auth/refresh", () => {
 });
 
 describe("POST /api/auth/logout", () => {
-    it("401s without a token (authenticate is mounted)", async () => {
+    it("12-18 401s without a token (authenticate is mounted)", async () => {
         const res = await request(app).post("/api/auth/logout");
 
         expect(res.status).toBe(401);
         expect(supabase.auth.signOut).not.toHaveBeenCalled();
     });
 
-    it("signs out with a valid token", async () => {
+    it("12-17 signs out with a valid token", async () => {
         mockValidToken();
         supabase.auth.signOut.mockResolvedValue({ error: null });
 
