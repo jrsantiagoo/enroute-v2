@@ -28,8 +28,9 @@ async function stubSmartNotifications(page: Page, updatedAt: Date) {
   const dismissed = new Set<string>();
   const dismissals: { surface: string; key: string }[] = [];
 
+  // The client asks for /api/smart-notifications/?surface=..., with a trailing slash.
   await page.route(
-    (url) => url.pathname === '/api/smart-notifications',
+    (url) => url.pathname.replace(/\/$/, '') === '/api/smart-notifications',
     async (route: Route) => {
       const surface = new URL(route.request().url()).searchParams.get('surface') ?? 'dashboard';
       const item = notification(updatedAt);

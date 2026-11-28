@@ -33,7 +33,7 @@ function uniquePlate() {
 async function createVehicle(page: Page, headers: Record<string, string>, plate: string) {
   const res = await page.request.post(`${API}/api/vehicles`, {
     headers,
-    data: { plate_number: plate, year: 2022, initial_odometer: 1000, expected_kml: 12, vehicle_type: 'Van' },
+    data: { plate_number: plate, year: 2022, initial_odometer: 1000, expected_kml: 12, vehicle_type: 'VAN' },
   });
   expect(res.ok(), await res.text()).toBe(true);
   return (await res.json()).data as { id_: string };
