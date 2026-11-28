@@ -167,8 +167,7 @@ jobs:
               env:
                   NEXT_PUBLIC_API_URL: http://localhost:8080
 
-    e2e:
-        if: github.event_name == 'pull_request'
+    e2e: # also after merges, so a merge that breaks the app shows up on dev, qa or main right away
         name: e2e (${{ matrix.name }})
         runs-on: ubuntu-24.04
         timeout-minutes: 40 # also keeps every run inside the 1h local-Supabase token lifetime
