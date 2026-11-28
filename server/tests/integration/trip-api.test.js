@@ -179,3 +179,19 @@ describe("POST /api/trips/assign", () => {
         expect(res.body.message).toBe("Trip is already assigned");
     });
 });
+
+describe("POST /api/trips with an archived driver", () => {
+    it("16-23 rejects the trip and creates nothing", async () => {
+        prisma.route.findUnique.mockResolvedValue({ id_: "route" });
+        prisma.agent_profile.findUnique.mockResolvedValue({ id_: "driver", archived_at: new Date() });
+
+        const res = await request(app)
+            .post("/api/trips")
+            .set("Authorization", "Bearer good-token")
+            .send({ routeId: "route", driverId: "driver" });
+
+        expect(res.status).toBe(400);
+        expect(res.body.message).toBe("Driver not found");
+        expect(prisma.trip.create).not.toHaveBeenCalled();
+    });
+});

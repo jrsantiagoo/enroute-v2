@@ -37,6 +37,8 @@ export default function Assignment() {
     );
     const [trips, setTrips] = useState<Trip[]>([]);
     const [drivers, setDrivers] = useState<Driver[]>([]);
+    // Archived drivers have left the company: the API rejects them, so they are not offered.
+    const assignableDrivers = drivers.filter((d) => !d.archived_at);
     const [driverCapacity, setDriverCapacity] = useState<DriverCapacity[]>([]);
     const [routes, setRoutes] = useState<RoutePlan[]>([]);
     const [vehicles, setVehicles] = useState<Vehicle[]>([]); // Added state for vehicles
@@ -208,7 +210,7 @@ export default function Assignment() {
 
             <div className="flex items-center justify-between">
                 <AssignmentForm
-                    driverOptions={drivers}
+                    driverOptions={assignableDrivers}
                     routeOptions={routes}
                     vehicleOptions={vehicles}
                     onCreated={handleCreateTrip}
@@ -287,7 +289,7 @@ export default function Assignment() {
                 <AssignmentFormModal
                     initialData={editTarget}
                     routeOptions={routes}
-                    driverOptions={drivers}
+                    driverOptions={assignableDrivers}
                     vehicleOptions={vehicles}
                     onClose={() => setEditTarget(null)}
                     onSave={handleSaveTrip}
