@@ -80,7 +80,7 @@ jobs:
     # CD (main only): migrate prod, release exactly this commit on Render, then wait
     # until Render serves it, so a green `deploy` (Vercel's promotion gate) means the backend is live.
     deploy:
-        needs: [server, client, models]
+        needs: [server, client, models, e2e] # e2e covers both browsers; a failure in either stops the deploy
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         runs-on: ubuntu-24.04
         timeout-minutes: 30
