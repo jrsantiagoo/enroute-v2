@@ -21,6 +21,7 @@ export interface Driver {
     name?: string;
     contact_number?: string;
     license_number?: string;
+    archived_at?: string | null;
 }
 
 export interface RouteSegment {
