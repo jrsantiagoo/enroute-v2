@@ -28,7 +28,7 @@ const NAV = [
   },
 ] as const;
 
-const SIDEBAR = 'div.fixed.top-0.left-0';
+const SIDEBAR = 'aside.fixed.top-0.left-0';
 
 async function collapseSidebar(page: Page) {
   const sidebar = page.locator(SIDEBAR);
@@ -102,7 +102,7 @@ test.describe('Session & Navigation', () => {
     await collapseSidebar(page);
 
     for (const { href, label } of NAV) {
-      await expect(page.locator(`a[href="${href}"]`)).toHaveAttribute('title', label);
+      await expect(page.locator(SIDEBAR).locator(`a[href="${href}"]`)).toHaveAttribute('title', label);
     }
   });
 
