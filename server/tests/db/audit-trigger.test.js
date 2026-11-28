@@ -28,7 +28,8 @@ describe.skipIf(!runAgainstDatabase)("audit_log against the database", () => {
             orderBy: { id: "asc" },
         });
 
-    const asUser = (userId, fn) => auditContext.run({ userId }, fn);
+    // Prisma queries run only when awaited, so await inside the context, as a request handler does.
+    const asUser = (userId, fn) => auditContext.run({ userId }, async () => await fn());
 
     function newVehicle() {
         return prisma.vehicle.create({
