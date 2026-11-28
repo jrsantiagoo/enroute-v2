@@ -27,7 +27,7 @@ beforeEach(() => {
 });
 
 describe("createTrip", () => {
-    it("throws when the route does not exist", async () => {
+    it("8-19 throws when the route does not exist", async () => {
         prisma.route.findUnique.mockResolvedValue(null);
 
         await expect(
@@ -46,7 +46,7 @@ describe("createTrip", () => {
         expect(prisma.trip.create).not.toHaveBeenCalled();
     });
 
-    it("creates a PENDING, ASSIGNED trip with the scheduled date", async () => {
+    it("8-18 creates a PENDING, ASSIGNED trip with the scheduled date", async () => {
         prisma.route.findUnique.mockResolvedValue({ id_: ROUTE_ID });
         prisma.agent_profile.findUnique.mockResolvedValue({ id_: DRIVER_ID });
         prisma.trip.create.mockResolvedValue({ id_: TRIP_ID });
@@ -76,7 +76,7 @@ describe("assignDriverToTrip", () => {
         ).rejects.toThrow("Trip not found");
     });
 
-    it("throws when the trip already has a driver", async () => {
+    it("8-21 throws when the trip already has a driver", async () => {
         prisma.trip.findUnique.mockResolvedValue({
             id_: TRIP_ID,
             driver_id_: "some-other-driver",

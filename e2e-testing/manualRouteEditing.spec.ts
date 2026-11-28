@@ -217,8 +217,6 @@ test.describe('Manual Route Editing', () => {
     await expect(page.getByRole('heading', { name: 'Create Route' })).toBeHidden();
   });
 
-  test.fixme('2-3 reassigns a stop from Driver A to Driver B', async () => {});
-
   test('2-5 removing the final stop empties the editor, but the save guard still blocks it', async ({
     page,
   }) => {
@@ -232,8 +230,4 @@ test.describe('Manual Route Editing', () => {
     const save = page.getByRole('button', { name: 'Create Route', exact: true }).last();
     await expect(save).toBeDisabled();
   });
-
-  // Blocked: DD-15/RMS-108 — the editor has no Revert/Undo action, only Cancel (discards
-  // everything) and Done Editing (keeps everything).
-  test.fixme('2-10 a revert action restores the pre-edit stop list', async () => {});
 });

@@ -154,10 +154,10 @@ GitHub Actions (`.github/workflows/ci.yml`) runs on every pull request and on pu
 
 | Job | Runs on | Checks |
 | --- | --- | --- |
-| `server` | PRs, `dev`, `qa`, `main` | Vitest suite with a coverage report, `prisma validate`, migrations apply to an empty Postgres, `schema.prisma` matches the migrations (drift), server boots (`/health`) |
+| `server` | PRs, `dev`, `qa`, `main` | Vitest suite with a coverage report, `prisma validate`, migrations apply to an empty Postgres, `schema.prisma` matches the migrations (drift), the audit trigger, actor and RLS checked on that database (`tests/db`), server boots (`/health`) |
 | `client` | PRs, `dev`, `qa`, `main` | ESLint, typed production build |
-| `e2e (chromium)`, `e2e (firefox)` | PRs | Playwright suite against a throwaway local Supabase (migrated + seeded per run) |
-| `deploy` | `main` | Runs after `server` and `client` pass, in the `production` environment |
+| `e2e (chromium)`, `e2e (firefox)` | PRs, `dev`, `qa`, `main` | Playwright suite against a throwaway local Supabase (migrated + seeded per run) |
+| `deploy` | `main` | Runs after `server`, `client`, `models` and both `e2e` jobs pass, in the `production` environment |
 
 The `server` job reports how much of `server/src` the tests cover. The totals are on each run's Summary page, and the per-file table is in the job log. It is a report only: no minimum is enforced, so it never fails a build. To see it locally, run `npm run test:coverage` in `server/`.
 
@@ -199,6 +199,20 @@ Work moves `feature/* → dev → qa → main`, and each arrow is a pull request
 - **`main`** is production. Promote with a PR from `qa` into `main`. Every push to `main` deploys.
 
 Merge promotion PRs (`dev → qa`, `qa → main`) with a merge commit, not squash or rebase. That keeps the branches sharing one history, so the next promotion carries only new commits instead of conflicting.
+
+### QA
+
+Testers verify issues on `qa` and record the result on the issue with one of these labels:
+
+| Label | Meaning |
+| --- | --- |
+| `qa-pending` | The work is merged and waiting for QA |
+| `qa-passed` | QA verified it on `qa` |
+| `qa-failed` | QA found problems; a comment lists them, and the work goes back to the devs |
+
+Each result comes with a comment saying what was tested and on which `qa` commit. A bug found outside an issue's scope gets its own issue from the Bug report template.
+
+Automated tests that implement a case in the MCO5 automation test plan start their title with the case number, for example `16-7 404s when the driver does not exist`. Search the tests for a case number to find its test.
 
 ### One-time setup (in this order)
 

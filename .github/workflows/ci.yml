@@ -43,6 +43,10 @@ jobs:
               run: npx prisma migrate deploy
             - name: schema.prisma matches migrations (drift)
               run: npx prisma migrate diff --from-url "$DATABASE_URL" --to-schema-datamodel prisma/schema.prisma --exit-code
+            - name: Audit trigger, actor and RLS on the migrated database
+              env:
+                  DB_TESTS: "1"
+              run: npx vitest run tests/db
             - name: Server boots
               env:
                   SUPABASE_URL: http://127.0.0.1:54321
@@ -76,7 +80,7 @@ jobs:
     # CD (main only): migrate prod, release exactly this commit on Render, then wait
     # until Render serves it, so a green `deploy` (Vercel's promotion gate) means the backend is live.
     deploy:
-        needs: [server, client, models]
+        needs: [server, client, models, e2e] # e2e covers both browsers; a failure in either stops the deploy
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         runs-on: ubuntu-24.04
         timeout-minutes: 30
@@ -167,8 +171,7 @@ jobs:
               env:
                   NEXT_PUBLIC_API_URL: http://localhost:8080
 
-    e2e:
-        if: github.event_name == 'pull_request'
+    e2e: # also after merges, so a merge that breaks the app shows up on dev, qa or main right away
         name: e2e (${{ matrix.name }})
         runs-on: ubuntu-24.04
         timeout-minutes: 40 # also keeps every run inside the 1h local-Supabase token lifetime

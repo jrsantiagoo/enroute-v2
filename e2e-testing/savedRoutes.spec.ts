@@ -194,7 +194,7 @@ test.describe('Saved Routes', () => {
     await expect(page.getByText('Route Plan', { exact: true })).toBeVisible();
   });
 
-  test('SR-04 the save dialog rejects an empty route name', async ({ page }) => {
+  test('11-4 SR-04 the save dialog rejects an empty route name', async ({ page }) => {
     await page.getByRole('button', { name: 'Create New Route' }).click();
     await page.getByRole('button', { name: 'Create Route', exact: true }).last().click();
 
@@ -203,7 +203,7 @@ test.describe('Saved Routes', () => {
     await expect(page.getByText('Route name is required.')).toBeVisible();
   });
 
-  test('SR-05 the save dialog rejects a duplicate name regardless of case', async ({ page }) => {
+  test('11-5 SR-05 the save dialog rejects a duplicate name regardless of case', async ({ page }) => {
     const name = uniqueName();
     await seedRoute(page, name);
 
@@ -216,7 +216,7 @@ test.describe('Saved Routes', () => {
     ).toBeVisible();
   });
 
-  test('SR-06 creating a route saves it, toasts, and lists it in the table', async ({ page }) => {
+  test('11-6 SR-06 creating a route saves it, toasts, and lists it in the table', async ({ page }) => {
     const name = uniqueName();
     await saveNewRoute(page, name);
 
@@ -311,7 +311,7 @@ test.describe('Saved Routes', () => {
     await expect(page.getByRole('cell', { name })).toBeVisible();
   });
 
-  test('SR-14 a confirmed delete removes the route and it does not return on reload', async ({
+  test('11-14 SR-14 a confirmed delete removes the route and it does not return on reload', async ({
     page,
   }) => {
     const name = uniqueName();

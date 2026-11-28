@@ -74,7 +74,7 @@ describe("GET /api/trips", () => {
 });
 
 describe("POST /api/trips", () => {
-    it("400s when routeId or driverId is missing", async () => {
+    it("8-20 400s when routeId or driverId is missing", async () => {
         const res = await request(app)
             .post("/api/trips")
             .set("Authorization", "Bearer good-token")
