@@ -28,7 +28,7 @@ const NAV = [
   },
 ] as const;
 
-const SIDEBAR = 'div.fixed.top-0.left-0';
+const SIDEBAR = 'aside.fixed.top-0.left-0';
 
 async function collapseSidebar(page: Page) {
   const sidebar = page.locator(SIDEBAR);
