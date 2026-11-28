@@ -154,7 +154,7 @@ GitHub Actions (`.github/workflows/ci.yml`) runs on every pull request and on pu
 
 | Job | Runs on | Checks |
 | --- | --- | --- |
-| `server` | PRs, `dev`, `qa`, `main` | Vitest suite with a coverage report, `prisma validate`, migrations apply to an empty Postgres, `schema.prisma` matches the migrations (drift), server boots (`/health`) |
+| `server` | PRs, `dev`, `qa`, `main` | Vitest suite with a coverage report, `prisma validate`, migrations apply to an empty Postgres, `schema.prisma` matches the migrations (drift), the audit trigger, actor and RLS checked on that database (`tests/db`), server boots (`/health`) |
 | `client` | PRs, `dev`, `qa`, `main` | ESLint, typed production build |
 | `e2e (chromium)`, `e2e (firefox)` | PRs, `dev`, `qa`, `main` | Playwright suite against a throwaway local Supabase (migrated + seeded per run) |
 | `deploy` | `main` | Runs after `server` and `client` pass, in the `production` environment |
