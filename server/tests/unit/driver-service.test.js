@@ -157,12 +157,19 @@ describe("assertDriverAssignable", () => {
         prisma.fuel_log.findMany.mockResolvedValue(fuelLogs);
     }
 
-    it("16-10 rejects an inactive driver with 409", async () => {
-        mockWork({});
+    it("16-10 rejects an archived driver", async () => {
+        prisma.agent_profile.findUnique.mockResolvedValue({ id_: DRIVER_UUID, archived_at: new Date() });
 
         await expect(driverService.assertDriverAssignable(DRIVER_UUID)).rejects.toMatchObject({
-            statusCode: 409,
+            statusCode: 404,
+            message: "Driver not found",
         });
+    });
+
+    it("16-22 lets a brand-new driver with no trips or fuel logs receive a first trip", async () => {
+        mockWork({});
+
+        await expect(driverService.assertDriverAssignable(DRIVER_UUID)).resolves.toBeUndefined();
     });
 
     it("16-11 allows a driver with scheduled trip hours", async () => {
@@ -173,7 +180,23 @@ describe("assertDriverAssignable", () => {
 });
 
 describe("getDriverCapacity status", () => {
-    it("marks 8+ hours as FULLY UTILIZED", async () => {
+    async function statusFor(trips) {
+        prisma.agent_profile.findMany.mockResolvedValue([{ id_: DRIVER_UUID, driver_id: "D-01" }]);
+        prisma.trip.findMany.mockResolvedValue(trips);
+        prisma.fuel_log.findMany.mockResolvedValue([]);
+        const [row] = await driverService.getDriverCapacity();
+        return row.status;
+    }
+
+    it("16-20 marks some work under 8 hours as ACTIVE", async () => {
+        expect(await statusFor([{ driver_id_: DRIVER_UUID, route: { totalDurationMinutes: 120 } }])).toBe("ACTIVE");
+    });
+
+    it("16-21 marks no trips or fuel logs as INACTIVE", async () => {
+        expect(await statusFor([])).toBe("INACTIVE");
+    });
+
+    it("16-19 marks 8+ hours as FULLY UTILIZED", async () => {
         prisma.agent_profile.findMany.mockResolvedValue([{ id_: DRIVER_UUID, driver_id: "D-01" }]);
         prisma.trip.findMany.mockResolvedValue([
             { driver_id_: DRIVER_UUID, route: { totalDurationMinutes: 480 } },

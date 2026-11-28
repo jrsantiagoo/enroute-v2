@@ -1,4 +1,5 @@
 import prisma from "../lib/prisma.js";
+import { assertDriverAssignable } from "./driver-services.js";
 
 const VALID_STATUSES = [
     "PENDING",
@@ -20,12 +21,8 @@ export async function createTrip(
         throw new Error("Route not found");
     }
 
-    const driver = await prisma.agent_profile.findUnique({
-        where: { id_: driverId },
-    });
-    if (!driver) {
-        throw new Error("Driver not found");
-    }
+    // Throws "Driver not found" for a missing or archived driver.
+    await assertDriverAssignable(driverId);
 
     return prisma.trip.create({
         data: {
@@ -133,12 +130,8 @@ export async function assignDriverToTrip(tripId, driverId) {
         throw new Error("Trip not found");
     }
 
-    const driver = await prisma.agent_profile.findUnique({
-        where: { id_: driverId },
-    });
-    if (!driver) {
-        throw new Error("Driver not found");
-    }
+    // Throws "Driver not found" for a missing or archived driver.
+    await assertDriverAssignable(driverId);
 
     if (trip.driver_id_) {
         throw new Error("Trip is already assigned");
