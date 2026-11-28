@@ -102,7 +102,7 @@ test.describe('Session & Navigation', () => {
     await collapseSidebar(page);
 
     for (const { href, label } of NAV) {
-      await expect(page.locator(`a[href="${href}"]`)).toHaveAttribute('title', label);
+      await expect(page.locator(SIDEBAR).locator(`a[href="${href}"]`)).toHaveAttribute('title', label);
     }
   });
 
